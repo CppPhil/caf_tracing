@@ -125,9 +125,5 @@ int main(int argc, char** argv) {
       delete[] p;
   });
 
-  for (char* p : args) {
-    fmt::print(stdout, "{}\n", p);
-  }
-
   return caf::exec_main<caf::io::middleman>(caf_main, argc - 1, args.data());
 }
