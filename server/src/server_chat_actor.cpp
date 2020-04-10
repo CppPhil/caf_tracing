@@ -40,7 +40,10 @@ void send(self_pointer self, const Filter& filter, const Ts&... xs) {
 void on_client_disconnect(
   self_pointer self,
   const caf::actor_addr& actor_address_of_disconnected_client,
-  const std::string& goodbye_message = "") noexcept {
+  const std::string& goodbye_message,
+  const std::string& span_context) noexcept {
+  // TODO: Continue the span from the span_context given if possible.
+
   auto& participants = self->state.participants;
 
   // Find the participant by its actor address.
@@ -71,8 +74,12 @@ void on_client_disconnect(
 /// @param self The server chat actor.
 /// @param nickname The nickname of the client trying to connect.
 /// @param client_actor The client actor.
+/// @param span_context The span context.
 void on_client_connect(self_pointer self, const std::string& nickname,
-                       const shared::client_actor_type& client_actor) {
+                       const shared::client_actor_type& client_actor,
+                       const std::string& span_context) {
+  // TODO: Continue span with span_context given if possible.
+
   auto& participants = self->state.participants;
 
   // Monitor the client so that we receive down_msgs if it crashes.
@@ -82,7 +89,9 @@ void on_client_connect(self_pointer self, const std::string& nickname,
   // they crash.
   self->set_down_handler(
     [self](caf::scheduled_actor*, const caf::down_msg& down_message) {
-      on_client_disconnect(self, down_message.source);
+      // TODO:                                        goodbye_message,
+      // span_context
+      on_client_disconnect(self, down_message.source, "", "");
     });
 
   // Add the participant.
@@ -101,7 +110,11 @@ void on_client_connect(self_pointer self, const std::string& nickname,
 /// Handles chat messages originating from clients.
 /// @param self This server chat actor.
 /// @param message The message received from a client.
-void on_chat(self_pointer self, const std::string& message) {
+/// @param span_context The span context.
+void on_chat(self_pointer self, const std::string& message,
+             const std::string& span_context) {
+  // TODO: Continue a span from the span_context given if possible.
+
   auto& sender = self->current_sender();
   auto& participants = self->state.participants;
 
@@ -123,8 +136,13 @@ void on_chat(self_pointer self, const std::string& message) {
 
 /// Handles /ls requests.
 /// @param self This server chat actor.
+/// @param span_context The span context.
 /// @return A vector of the nicknames of the chat participants.
-std::vector<std::string> on_ls(self_pointer self) {
+std::vector<std::string> on_ls(self_pointer self,
+                               const std::string& span_context) {
+  // TODO: Continue the Span from the span_context if possible.
+  // TODO: Return back a newly injected span_context thingie.
+
   auto& participants = self->state.participants;
 
   // Allocate enough storage for the nicknames.
@@ -141,17 +159,22 @@ std::vector<std::string> on_ls(self_pointer self) {
 shared::server_actor_type::behavior_type chat_server(self_pointer self) {
   return {
     [self](caf::join_atom, const std::string& nickname,
-           const shared::client_actor_type& client_actor) {
-      on_client_connect(self, nickname, client_actor);
+           const shared::client_actor_type& client_actor,
+           const std::string& span_context) {
+      on_client_connect(self, nickname, client_actor, span_context);
     },
-    [self](shared::chat_atom, const std::string& message) {
-      on_chat(self, message);
+    [self](shared::chat_atom, const std::string& message,
+           const std::string& span_context) {
+      on_chat(self, message, span_context);
     },
-    [self](caf::leave_atom, const std::string& goodbye_message) {
+    [self](caf::leave_atom, const std::string& goodbye_message,
+           const std::string& span_context) {
       on_client_disconnect(self, self->current_sender()->address(),
-                           goodbye_message);
+                           goodbye_message, span_context);
     },
-    [self](shared::ls_atom) { return on_ls(self); },
+    [self](shared::ls_atom, const std::string& span_context) {
+      return on_ls(self, span_context);
+    },
   };
 }
 } // namespace server
