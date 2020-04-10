@@ -1,0 +1,6 @@
+Add format.sh
+
+Add build.sh
+
+Add scripts to run server / client
+
