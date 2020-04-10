@@ -117,8 +117,15 @@ client_actor(shared::client_actor_type::pointer self,
       self
         ->request(remote_actor, caf::infinite, shared::ls_atom::value,
                   inject_res.value_or(""))
-        .then([client_nickname, response_promise](
-                const std::vector<std::string>& result) mutable {
+        .then([client_nickname,
+               response_promise](const std::vector<std::string>& result,
+                                 const std::string& span_ctx_str) mutable {
+          auto span = shared::create_span(span_ctx_str,
+                                          "ls query recv (client)");
+          span->SetTag("client_nickname", client_nickname);
+          span->SetTag("result", fmt::format("Participants:\n[\n{}\n]\n",
+                                             caf::join(result, ",\n")));
+
           response_promise.deliver(
             std::find(result.begin(), result.end(), client_nickname)
             != result.end());
