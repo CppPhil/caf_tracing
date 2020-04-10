@@ -5,7 +5,7 @@
 
 #include "client_actor_type.hpp"
 
-namespace e3::client {
+namespace client {
 /// Routine to perform an orderly shutdown of the client application.
 /// @param system The actor system.
 /// @param self THe scoped actor from main.cpp
@@ -14,4 +14,4 @@ namespace e3::client {
 void shutdown(caf::actor_system& system, caf::scoped_actor& self,
               const shared::client_actor_type& client_actor,
               const std::string& client_nickname) noexcept;
-} // namespace e3::client
+} // namespace client

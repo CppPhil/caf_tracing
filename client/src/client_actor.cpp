@@ -7,7 +7,7 @@
 #include "atoms.hpp"
 #include "client_actor.hpp"
 
-namespace e3::client {
+namespace client {
 shared::client_actor_type::behavior_type
 client_actor(shared::client_actor_type::pointer self,
              const shared::server_actor_type& remote_actor) {
@@ -57,4 +57,4 @@ client_actor(shared::client_actor_type::pointer self,
     },
   };
 }
-} // namespace e3::client
+} // namespace client

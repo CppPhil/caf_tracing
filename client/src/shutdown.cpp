@@ -2,7 +2,7 @@
 #include "aprint.hpp"
 #include "atoms.hpp"
 
-namespace e3::client {
+namespace client {
 void shutdown(caf::actor_system& system, caf::scoped_actor& self,
               const shared::client_actor_type& client_actor,
               const std::string& client_nickname) noexcept {
@@ -29,4 +29,4 @@ void shutdown(caf::actor_system& system, caf::scoped_actor& self,
         });
   }
 }
-} // namespace e3::client
+} // namespace client
