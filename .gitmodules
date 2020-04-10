@@ -7,9 +7,6 @@
 [submodule "external/expected"]
 	path = external/expected
 	url = https://github.com/TartanLlama/expected.git
-[submodule "external/philslib"]
-	path = external/philslib
-	url = https://github.com/CppPhil/philslib.git
 [submodule "external/GSL"]
 	path = external/GSL
 	url = https://github.com/microsoft/GSL.git
