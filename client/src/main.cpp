@@ -4,9 +4,11 @@
 #include <iostream>
 #include <string>
 
-#include "fmt/format.h"
+#include <gsl/gsl_util>
 
-#include "caf/io/all.hpp"
+#include <fmt/format.h>
+
+#include <caf/io/all.hpp>
 
 #include "atoms.hpp"
 #include "client_actor.hpp"
@@ -103,6 +105,23 @@ int main(int argc, char** argv) {
   }
 
   shared::setup_tracer(argv[1], "caf_tracing-client");
+
+  static std::vector<char*> args;
+
+  for (auto i = 0; i < argc; ++i) {
+    if (i == 1)
+      continue;
+
+    const auto len = strlen(argv[i]);
+    auto* p = new char[len];
+    memcpy(p, argv[i], len);
+    args.push_back(p);
+  }
+
+  [[maybe_unused]] auto final_act = gsl::finally([] {
+    for (auto* p : args)
+      delete[] p;
+  });
 
   return caf::exec_main<caf::io::middleman>(caf_main, argc, argv);
 }

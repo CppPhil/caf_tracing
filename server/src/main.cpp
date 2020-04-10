@@ -72,7 +72,7 @@ int main(int argc, char** argv) {
     args.push_back(p);
   }
 
-  auto final_act = gsl::finally([] {
+  [[maybe_unused]] auto final_act = gsl::finally([] {
     for (auto* p : args)
       delete[] p;
   });
