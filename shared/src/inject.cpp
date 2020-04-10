@@ -2,9 +2,8 @@
 
 #include "inject.hpp"
 
-namespace shared{
-tl::expected<std::string, error> inject(const opentracing::SpanContext& sc)
-{
+namespace shared {
+tl::expected<std::string, error> inject(const opentracing::SpanContext& sc) {
   std::ostringstream oss;
 
   const auto exp = opentracing::Tracer::Global()->Inject(sc, oss);
