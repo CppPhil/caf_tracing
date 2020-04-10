@@ -78,7 +78,7 @@ void on_client_disconnect(
         return fmt::format("{} has left the chatroom: \"{}\"\n", nickname,
                            goodbye_message);
       }(),
-      inject_res.or_value(""));
+      inject_res.value_or(""));
   }
 }
 
