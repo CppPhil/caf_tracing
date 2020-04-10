@@ -63,13 +63,12 @@ int main(int argc, char** argv) {
   static std::vector<char*> args;
 
   for (auto i = 0; i < argc; ++i) {
-    if (i == 1)
-      continue;
-
-    const auto len = strlen(argv[i]);
-    auto* p = new char[len];
-    memcpy(p, argv[i], len);
-    args.push_back(p);
+    if (i != 1) {
+      const auto len = strlen(argv[i]);
+      auto* p = new char[len];
+      memcpy(p, argv[i], len);
+      args.push_back(p);
+    }
   }
 
   [[maybe_unused]] auto final_act = gsl::finally([] {

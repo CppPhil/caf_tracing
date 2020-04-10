@@ -98,6 +98,10 @@ void caf_main(caf::actor_system& system, const config& config) {
 }
 
 int main(int argc, char** argv) {
+  for (int i = 0; i < argc; ++i) {
+    printf("argv[%d]: \"%s\"\n", i, argv[i]);
+  }
+
   if (argc < 2) {
     fprintf(stderr,
             "No YAML config file was passed as a command line argument!\n");
@@ -109,13 +113,12 @@ int main(int argc, char** argv) {
   static std::vector<char*> args;
 
   for (auto i = 0; i < argc; ++i) {
-    if (i == 1)
-      continue;
-
-    const auto len = strlen(argv[i]);
-    auto* p = new char[len];
-    memcpy(p, argv[i], len);
-    args.push_back(p);
+    if (i != 1) {
+      const auto len = strlen(argv[i]);
+      auto* p = new char[len];
+      memcpy(p, argv[i], len);
+      args.push_back(p);
+    }
   }
 
   [[maybe_unused]] auto final_act = gsl::finally([] {
