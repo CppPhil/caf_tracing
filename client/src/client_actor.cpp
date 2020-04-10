@@ -4,8 +4,6 @@
 #include <utility>
 #include <vector>
 
-#include <fmt/ostream.h>
-
 #include <opentracing/tracer.h>
 
 #include "aprint.hpp"
