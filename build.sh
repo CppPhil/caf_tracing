@@ -28,7 +28,6 @@ EOF
 }
 
 build_type="Debug"
-verbose_spans="false"
 
 while [ "$1" != "" ]; do
   PARAM=`echo $1 | awk -F= '{print $1}'`
