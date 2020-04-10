@@ -2,7 +2,7 @@
 
 #include "ip_address.hpp"
 
-namespace e3::shared {
+namespace shared {
 caf::optional<std::string> ip_address() {
   const auto addresses = caf::io::network::interfaces::list_addresses(
     caf::io::network::protocol::ipv4, /* include_localhost */ false);
@@ -12,4 +12,4 @@ caf::optional<std::string> ip_address() {
 
   return addresses.front();
 }
-} // namespace e3::shared
+} // namespace shared

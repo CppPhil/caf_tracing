@@ -5,7 +5,7 @@
 
 #include "caf/all.hpp"
 
-namespace e3::shared {
+namespace shared {
 /// Formats a message using fmt::format which is then printed to aout.
 /// @tparam Self The type of `self`.
 /// @tparam FormatString The type of the `format_string`.
@@ -22,4 +22,4 @@ aprint(Self&& self, const FormatString& format_string, Ts&&... xs) {
   return caf::aout(std::forward<Self>(self))
          << fmt::format(format_string, std::forward<Ts>(xs)...) << std::flush;
 }
-} // namespace e3::shared
+} // namespace shared
