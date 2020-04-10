@@ -1,4 +1,5 @@
 #include <cstdint>
+#include <cstdio>
 
 #include <iostream>
 #include <string>
@@ -9,6 +10,7 @@
 
 #include "atoms.hpp"
 #include "client_actor.hpp"
+#include "setup_tracer.hpp"
 #include "shutdown.hpp"
 
 namespace {
@@ -93,4 +95,14 @@ void caf_main(caf::actor_system& system, const config& config) {
   run_client(system, config);
 }
 
-CAF_MAIN(caf::io::middleman)
+int main(int argc, char** argv) {
+  if (argc != 2) {
+    fprintf(stderr,
+            "No YAML config file was passed as a command line argument!\n");
+    return 1;
+  }
+
+  shared::setup_tracer(argv[1], "caf_tracing-client");
+
+  return caf::exec_main<caf::io::middleman>(caf_main, argc, argv);
+}

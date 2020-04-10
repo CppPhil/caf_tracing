@@ -1,9 +1,12 @@
+#include <cstdio>
+
 #include "fmt/format.h"
 
 #include "caf/io/all.hpp"
 
 #include "ip_address.hpp"
 #include "server_chat_actor.hpp"
+#include "setup_tracer.hpp"
 
 namespace {
 struct config : caf::actor_system_config {
@@ -46,4 +49,14 @@ void caf_main(caf::actor_system& system, const config& config) {
   run_server(system, config);
 }
 
-CAF_MAIN(caf::io::middleman)
+int main(int argc, char** argv) {
+  if (argc != 2) {
+    fprintf(stderr,
+            "No YAML config file was passed as a command line argument!\n");
+    return 1;
+  }
+
+  shared::setup_tracer(argv[1], "caf_tracing-server");
+
+  return caf::exec_main<caf::io::middleman>(caf_main, argc, argv);
+}

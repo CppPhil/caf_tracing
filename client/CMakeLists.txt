@@ -40,4 +40,5 @@ target_link_libraries(
     ${APP_NAME}
     PRIVATE
     ${LIB_NAME}
+    shared_library
 )
