@@ -16,6 +16,7 @@ set(LIB_HEADERS
     
 set(LIB_SOURCES
     src/create_span.cpp
+    src/error.cpp
     src/extract.cpp
     src/inject.cpp
     src/ip_address.cpp

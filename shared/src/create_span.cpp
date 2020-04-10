@@ -14,4 +14,5 @@ create_span(const std::string& serialized_span_context,
 
   return opentracing::Tracer::Global()->StartSpan(
     operation_name, {opentracing::ChildOf(ctx->get())});
+}
 } // namespace shared
