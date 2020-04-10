@@ -33,7 +33,7 @@ target_include_directories(
     ${LIB_NAME}
     PUBLIC
     ${CAF_INCLUDE_DIRS}
-    ${exercise3_SOURCE_DIR}/shared/include
+    ${caf_tracing_SOURCE_DIR}/shared/include
 )
 
 target_compile_definitions(

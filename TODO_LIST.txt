@@ -1,4 +1,4 @@
-Add build.sh
-
 Add scripts to run server / client
+
+Ensure that it works in debug & release mode.
 
