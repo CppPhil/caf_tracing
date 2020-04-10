@@ -98,10 +98,6 @@ void caf_main(caf::actor_system& system, const config& config) {
 }
 
 int main(int argc, char** argv) {
-  for (int i = 0; i < argc; ++i) {
-    printf("argv[%d]: \"%s\"\n", i, argv[i]);
-  }
-
   if (argc < 2) {
     fprintf(stderr,
             "No YAML config file was passed as a command line argument!\n");
@@ -126,5 +122,5 @@ int main(int argc, char** argv) {
       delete[] p;
   });
 
-  return caf::exec_main<caf::io::middleman>(caf_main, argc, argv);
+  return caf::exec_main<caf::io::middleman>(caf_main, argc - 1, args.data());
 }
