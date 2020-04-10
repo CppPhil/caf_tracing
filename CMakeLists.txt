@@ -29,7 +29,7 @@ endif()
 
 execute_process(
   COMMAND ${CMAKE_COMMAND} -E tar xfz ${TAR_PATH}
-  WORKING_DIRECTORY ${caf_tracing_SOURCES_DIR}/external
+  WORKING_DIRECTORY ${caf_tracing_SOURCE_DIR}/external
   RESULT_VARIABLE rv
 )
 

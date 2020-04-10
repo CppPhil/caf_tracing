@@ -658,3 +658,7 @@ build
 # log files
 *.log
 
+# actor-framework release
+external/actor-framework-0.17.4
+external/actor-framework-0.17.4.tar.gz
+
