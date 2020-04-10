@@ -38,6 +38,7 @@ target_link_libraries(
     ${CAF_LIBRARY_CORE}
     ${CAF_LIBRARY_IO}
     jaegertracing
+    GSL
 )
 
 target_include_directories(

@@ -96,7 +96,7 @@ void caf_main(caf::actor_system& system, const config& config) {
 }
 
 int main(int argc, char** argv) {
-  if (argc != 2) {
+  if (argc < 2) {
     fprintf(stderr,
             "No YAML config file was passed as a command line argument!\n");
     return 1;

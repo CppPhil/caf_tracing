@@ -1,6 +1,8 @@
 #include <cstdio>
 
-#include "fmt/format.h"
+#include <gsl/gsl_util>
+
+#include <fmt/format.h>
 
 #include "caf/io/all.hpp"
 
@@ -50,7 +52,7 @@ void caf_main(caf::actor_system& system, const config& config) {
 }
 
 int main(int argc, char** argv) {
-  if (argc != 2) {
+  if (argc < 2) {
     fprintf(stderr,
             "No YAML config file was passed as a command line argument!\n");
     return 1;
@@ -58,5 +60,22 @@ int main(int argc, char** argv) {
 
   shared::setup_tracer(argv[1], "caf_tracing-server");
 
-  return caf::exec_main<caf::io::middleman>(caf_main, argc, argv);
+  static std::vector<char*> args;
+
+  for (auto i = 0; i < argc; ++i) {
+    if (i == 1)
+      continue;
+
+    const auto len = strlen(argv[i]);
+    auto* p = new char[len];
+    memcpy(p, argv[i], len);
+    args.push_back(p);
+  }
+
+  auto final_act = gsl::finally([] {
+    for (auto* p : args)
+      delete[] p;
+  });
+
+  return caf::exec_main<caf::io::middleman>(caf_main, argc - 1, args.data());
 }
