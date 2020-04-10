@@ -11,7 +11,8 @@ set(LIB_HEADERS
     include/inject.hpp
     include/ip_address.hpp
     include/server_actor_type.hpp
-    include/setup_tracer.hpp)
+    include/setup_tracer.hpp
+    include/source_location.hpp)
     
 set(LIB_SOURCES
     src/create_span.cpp
