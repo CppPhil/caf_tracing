@@ -1,5 +1,5 @@
 ### OBJECT LIBRARY
-set(LIB_NAME e3ClientLib)
+set(LIB_NAME client_library)
 
 set(LIB_HEADERS
     include/client_actor.hpp
@@ -19,17 +19,17 @@ add_library(
 target_link_libraries(
     ${LIB_NAME}
     PUBLIC
-    e3SharedLib
+    shared_library
 )
 
 target_include_directories(
     ${LIB_NAME}
     PUBLIC
-    ${exercise3_SOURCE_DIR}/client/include
+    ${caf_tracing_SOURCE_DIR}/client/include
 )
 
 ### APPLICATION
-set(APP_NAME e3ClientApp)
+set(APP_NAME client_application)
 
 add_executable(
     ${APP_NAME}

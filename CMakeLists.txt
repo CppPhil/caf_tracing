@@ -32,6 +32,8 @@ set(BUILD_TESTING false)
 set(JAEGERTRACING_BUILD_EXAMPLES false)
 add_subdirectory(external/jaeger-client-cpp)
 
+add_subdirectory(external/fmtlib)
+
 add_subdirectory(client)
 add_subdirectory(server)
 add_subdirectory(shared)
