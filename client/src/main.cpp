@@ -34,9 +34,6 @@ struct config : caf::actor_system_config {
 };
 
 void run_client(caf::actor_system& system, const config& config) noexcept {
-  fmt::print(stderr, ">>> run_client: host=\"{}\" port=\"{}\"\n", config.host,
-             config.port);
-
   const auto expected_remote_actor
     = caf::io::remote_actor<shared::server_actor_type>(system, config.host,
                                                        config.port);
