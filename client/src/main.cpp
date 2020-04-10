@@ -17,7 +17,7 @@ struct config : caf::actor_system_config {
   uint16_t port = 0;
 
   config() {
-    add_message_type<e3::shared::client_actor_type>("client_actor_type");
+    add_message_type<shared::client_actor_type>("client_actor_type");
 
     opt_group(custom_options_, "global")
       .add(host, "host,H", "server host")
@@ -31,7 +31,7 @@ struct config : caf::actor_system_config {
 
 void run_client(caf::actor_system& system, const config& config) noexcept {
   const auto expected_remote_actor
-    = caf::io::remote_actor<e3::shared::server_actor_type>(system, config.host,
+    = caf::io::remote_actor<shared::server_actor_type>(system, config.host,
                                                            config.port);
 
   if (!expected_remote_actor) {
@@ -41,7 +41,7 @@ void run_client(caf::actor_system& system, const config& config) noexcept {
 
   const auto& remote_actor = *expected_remote_actor;
 
-  const auto client_actor = system.spawn(&e3::client::client_actor,
+  const auto client_actor = system.spawn(&client::client_actor,
                                          remote_actor);
 
   caf::scoped_actor self(system);
@@ -65,15 +65,15 @@ void run_client(caf::actor_system& system, const config& config) noexcept {
     if (parts.empty())
       invalid_command(line_buffer); // NOLINT(bugprone-branch-clone)
     else if (parts.front() == "/ls")
-      self->send(client_actor, e3::shared::ls_atom::value);
+      self->send(client_actor, shared::ls_atom::value);
     else if (parts.front() == "/quit") {
       self->send(client_actor, caf::leave_atom::value,
                  caf::join(++(parts.begin()), parts.end(), " "));
-      e3::client::shutdown(system, self, client_actor, username);
+      client::shutdown(system, self, client_actor, username);
       return;
     } else if (!parts.front().empty()
                && parts.front().front() != '/') // Handle chat command
-      self->send(client_actor, e3::shared::local_chat_atom::value, line_buffer);
+      self->send(client_actor, shared::local_chat_atom::value, line_buffer);
     else
       invalid_command(line_buffer);
   }

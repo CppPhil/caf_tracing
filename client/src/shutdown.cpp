@@ -22,7 +22,7 @@ void shutdown(caf::actor_system& system, caf::scoped_actor& self,
         },
         [self = self.ptr(), &system, &client_actor,
          &keep_spinning](const caf::error& error) {
-          e3::shared::aprint(self, "Unexpected error during shutdown: \"{}\"\n",
+          shared::aprint(self, "Unexpected error during shutdown: \"{}\"\n",
                              system.render(error));
           self->send_exit(client_actor, caf::exit_reason::kill);
           keep_spinning = false;
