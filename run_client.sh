@@ -57,7 +57,7 @@ done
 
 cd $DIR
 
-./build/client/client_application --host=$host --port=$port
+./build/client/client_application $DIR/config.yml --host=$host --port=$port
 
 cd $PREV_DIR
 
