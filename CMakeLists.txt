@@ -59,6 +59,7 @@ set(JAEGERTRACING_BUILD_EXAMPLES false)
 add_subdirectory(external/jaeger-client-cpp)
 
 add_subdirectory(external/fmtlib)
+add_subdirectory(external/GSL)
 
 add_subdirectory(client)
 add_subdirectory(server)
