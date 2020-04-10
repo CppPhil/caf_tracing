@@ -45,21 +45,17 @@ client_actor(shared::client_actor_type::pointer self,
 
       // Pass the /ls request to the server and properly print the result.
       self->request(remote_actor, caf::infinite, atom, inject_res.value_or(""))
-        .then(
-          [self](
-            const std::tuple<std::vector<std::string>, std::string>& result) {
-            const auto& [vector, span_context_str] = result;
+        .then([self](const std::vector<std::string>& vector,
+                     const std::string& span_context_str) {
+          auto span = shared::create_span(span_context_str, "ls recv (client)");
 
-            auto span = shared::create_span(span_context_str,
-                                            "ls recv (client)");
+          const auto to_print = fmt::format("Participants:\n[\n{}\n]\n",
+                                            caf::join(vector, ",\n"));
 
-            const auto to_print = fmt::format("Participants:\n[\n{}\n]\n",
-                                              caf::join(vector, ",\n"));
+          span->SetTag("participants", to_print);
 
-            span->SetTag("participants", to_print);
-
-            shared::aprint(self, to_print);
-          });
+          shared::aprint(self, to_print);
+        });
     },
     [self, remote_actor](caf::leave_atom atom, std::string goodbye_message) {
       auto span = opentracing::Tracer::Global()->StartSpan("quit (client)");
