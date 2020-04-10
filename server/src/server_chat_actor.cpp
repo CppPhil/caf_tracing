@@ -1,9 +1,12 @@
 #include <algorithm>
 #include <functional>
 
-#include "fmt/format.h"
+#include <fmt/format.h>
 
+#include "create_span.hpp"
+#include "inject.hpp"
 #include "server_chat_actor.hpp"
+#include "shared/aprint.hpp"
 
 namespace server {
 namespace {
@@ -42,7 +45,15 @@ void on_client_disconnect(
   const caf::actor_addr& actor_address_of_disconnected_client,
   const std::string& goodbye_message,
   const std::string& span_context) noexcept {
-  // TODO: Continue the span from the span_context given if possible.
+  auto span = shared::create_span(span_context, "quit (server)");
+
+  span->SetTag("goodbye_message", goodbye_message);
+
+  const auto inject_res = shared::inject(span->context());
+
+  if (!inject_res.has_value())
+    shared::aprint(self, "Couldn't inject span context for quit: \"{}\"\n",
+                   inject_res.error());
 
   auto& participants = self->state.participants;
 
@@ -66,7 +77,8 @@ void on_client_disconnect(
 
         return fmt::format("{} has left the chatroom: \"{}\"\n", nickname,
                            goodbye_message);
-      }());
+      }(),
+      inject_res.or_value(""));
   }
 }
 
@@ -78,7 +90,16 @@ void on_client_disconnect(
 void on_client_connect(self_pointer self, const std::string& nickname,
                        const shared::client_actor_type& client_actor,
                        const std::string& span_context) {
-  // TODO: Continue span with span_context given if possible.
+  auto span = shared::create_span(span_context, "join (server)");
+
+  span->SetTag("nickname", nickname);
+
+  const auto inject_res = shared::inject(span->context());
+
+  if (!inject_res.has_value())
+    shared::aprint(self, "Couldn't inject span context for join: \"{}\"\n",
+                   inject_res.error());
+  const inject_result = inject_res.value_or("");
 
   auto& participants = self->state.participants;
 
@@ -88,10 +109,9 @@ void on_client_connect(self_pointer self, const std::string& nickname,
   // Register a down handler to disconnect clients by their actor addresses when
   // they crash.
   self->set_down_handler(
-    [self](caf::scheduled_actor*, const caf::down_msg& down_message) {
-      // TODO:                                        goodbye_message,
-      // span_context
-      on_client_disconnect(self, down_message.source, "", "");
+    [self, inject_result](caf::scheduled_actor*,
+                          const caf::down_msg& down_message) {
+      on_client_disconnect(self, down_message.source, "", inject_result);
     });
 
   // Add the participant.
@@ -104,7 +124,7 @@ void on_client_connect(self_pointer self, const std::string& nickname,
       return participant.actor() != client_actor;
     },
     shared::chat_atom::value,
-    fmt::format("{} has joined the chatroom.\n", nickname));
+    fmt::format("{} has joined the chatroom.\n", nickname), inject_result);
 }
 
 /// Handles chat messages originating from clients.
@@ -113,7 +133,15 @@ void on_client_connect(self_pointer self, const std::string& nickname,
 /// @param span_context The span context.
 void on_chat(self_pointer self, const std::string& message,
              const std::string& span_context) {
-  // TODO: Continue a span from the span_context given if possible.
+  auto span = shared::create_span(span_context, "chat (server)");
+
+  span->SetTag("message", message);
+
+  const auto inject_res = shared::inject(span->context());
+
+  if (!inject_res.has_value())
+    shared::aprint(self, "Couldn't inject span context for chat: \"{}\"\n",
+                   inject_res.error());
 
   auto& sender = self->current_sender();
   auto& participants = self->state.participants;
@@ -130,18 +158,25 @@ void on_chat(self_pointer self, const std::string& message,
         return participant.actor() != sender;
       },
       shared::chat_atom::value,
-      fmt::format("{}: \"{}\"\n", it->nickname(), message));
+      fmt::format("{}: \"{}\"\n", it->nickname(), message),
+      inject_res.value_or(""));
   }
 }
 
 /// Handles /ls requests.
 /// @param self This server chat actor.
 /// @param span_context The span context.
-/// @return A vector of the nicknames of the chat participants.
-std::vector<std::string> on_ls(self_pointer self,
-                               const std::string& span_context) {
-  // TODO: Continue the Span from the span_context if possible.
-  // TODO: Return back a newly injected span_context thingie.
+/// @return A vector of the nicknames of the chat participants and the span
+/// context.
+std::pair<std::vector<std::string>, std::string>
+on_ls(self_pointer self, const std::string& span_context) {
+  auto span = shared::create_span(span_context, "ls (server)");
+
+  const auto inject_res = shared::inject(span->context());
+
+  if (!inject_res.has_value())
+    shared::aprint(self, "Couldn't inject span context for ls: \"{}\"\n",
+                   inject_res.error());
 
   auto& participants = self->state.participants;
 
@@ -152,7 +187,7 @@ std::vector<std::string> on_ls(self_pointer self,
   std::transform(participants.begin(), participants.end(), nicknames.begin(),
                  std::mem_fn(&participant::nickname));
 
-  return nicknames;
+  return std::make_pair(std::move(nicknames), inject_res.value_or(""));
 }
 } // namespace
 

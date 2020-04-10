@@ -1,4 +1,2 @@
-See in source TODOs
-
 Ensure that it works in debug & release mode.
 

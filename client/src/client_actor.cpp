@@ -10,6 +10,7 @@
 #include "aprint.hpp"
 #include "atoms.hpp"
 #include "client_actor.hpp"
+#include "create_span.hpp"
 #include "inject.hpp"
 
 namespace client {
@@ -43,12 +44,20 @@ client_actor(shared::client_actor_type::pointer self,
 
       // Pass the /ls request to the server and properly print the result.
       self->request(remote_actor, caf::infinite, atom, inject_res.value_or(""))
-        .then([self](
-                const std::vector<std::string>&
-                  result) { // TODO: Try'n receive the SpanContext back somehow.
-          shared::aprint(self, "Participants:\n[\n{}\n]\n",
-                         caf::join(result, ",\n"));
-        });
+        .then(
+          [self](
+            const std::pair<std::vector<std::string>, std::string>& result) {
+            const auto& [vector, span_context_str] = *result;
+
+            auto span = shared::create_span(span_context_str);
+
+            const auto to_print = fmt::format("Participants:\n[\n{}\n]\n",
+                                              caf::join(vector, ",\n"));
+
+            span->SetTag("participants", to_print);
+
+            shared::aprint(self, to_print);
+          });
     },
     [self, remote_actor](caf::leave_atom atom, std::string goodbye_message) {
       auto span = opentracing::Tracer::Global()->StartSpan("quit (client)");
@@ -80,9 +89,12 @@ client_actor(shared::client_actor_type::pointer self,
       self->send(remote_actor, shared::chat_atom::value, std::move(message),
                  inject_res.value_or(""));
     },
-    [self](shared::chat_atom,
-           const std::string&
-             message) { // TODO: Accept a span context from the server here.
+    [self](shared::chat_atom, const std::string& message,
+           const std::string& span_context) {
+      auto span = shared::create_span(span_context, "chat recv (client)");
+
+      span->SetTag("message", message);
+
       // Print any chat messages received from the remote server actor.
       shared::aprint(self, message);
     },
