@@ -1,12 +1,13 @@
 #include <algorithm>
 #include <functional>
+#include <tuple>
 
 #include <fmt/format.h>
 
+#include "aprint.hpp"
 #include "create_span.hpp"
 #include "inject.hpp"
 #include "server_chat_actor.hpp"
-#include "shared/aprint.hpp"
 
 namespace server {
 namespace {
@@ -99,7 +100,7 @@ void on_client_connect(self_pointer self, const std::string& nickname,
   if (!inject_res.has_value())
     shared::aprint(self, "Couldn't inject span context for join: \"{}\"\n",
                    inject_res.error());
-  const inject_result = inject_res.value_or("");
+  const auto inject_result = inject_res.value_or("");
 
   auto& participants = self->state.participants;
 
@@ -168,7 +169,7 @@ void on_chat(self_pointer self, const std::string& message,
 /// @param span_context The span context.
 /// @return A vector of the nicknames of the chat participants and the span
 /// context.
-std::pair<std::vector<std::string>, std::string>
+std::tuple<std::vector<std::string>, std::string>
 on_ls(self_pointer self, const std::string& span_context) {
   auto span = shared::create_span(span_context, "ls (server)");
 
@@ -187,7 +188,7 @@ on_ls(self_pointer self, const std::string& span_context) {
   std::transform(participants.begin(), participants.end(), nicknames.begin(),
                  std::mem_fn(&participant::nickname));
 
-  return std::make_pair(std::move(nicknames), inject_res.value_or(""));
+  return std::make_tuple(std::move(nicknames), inject_res.value_or(""));
 }
 } // namespace
 

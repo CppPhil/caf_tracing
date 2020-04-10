@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -46,10 +47,11 @@ client_actor(shared::client_actor_type::pointer self,
       self->request(remote_actor, caf::infinite, atom, inject_res.value_or(""))
         .then(
           [self](
-            const std::pair<std::vector<std::string>, std::string>& result) {
-            const auto& [vector, span_context_str] = *result;
+            const std::tuple<std::vector<std::string>, std::string>& result) {
+            const auto& [vector, span_context_str] = result;
 
-            auto span = shared::create_span(span_context_str);
+            auto span = shared::create_span(span_context_str,
+                                            "ls recv (client)");
 
             const auto to_print = fmt::format("Participants:\n[\n{}\n]\n",
                                               caf::join(vector, ",\n"));

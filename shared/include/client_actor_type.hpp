@@ -11,6 +11,6 @@ using client_actor_type
                      caf::reacts_to<ls_atom>,
                      caf::reacts_to<caf::leave_atom, std::string>,
                      caf::reacts_to<local_chat_atom, std::string>,
-                     caf::reacts_to<chat_atom, std::string>,
+                     caf::reacts_to<chat_atom, std::string, std::string>,
                      caf::replies_to<ls_query_atom, std::string>::with<bool>>;
 } // namespace shared
