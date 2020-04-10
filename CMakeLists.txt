@@ -11,6 +11,32 @@ HunterGate(
 
 project(caf_tracing VERSION 1.0.0)
 
+set(CAF_URL https://github.com/actor-framework/actor-framework/archive/0.17.4.tar.gz)
+
+set(TAR_PATH ${caf_tracing_SOURCE_DIR}/external/actor-framework-0.17.4.tar.gz)
+
+file(
+  DOWNLOAD ${CAF_URL}
+  ${TAR_PATH}
+  STATUS status
+)
+
+list(GET status 0 status_code)
+
+if (NOT status_code EQUAL 0)
+  message(FATAL_ERROR "error: downloading '${CAF_URL}' failed")
+endif()
+
+execute_process(
+  COMMAND ${CMAKE_COMMAND} -E tar xfz ${TAR_PATH}
+  WORKING_DIRECTORY ${caf_tracing_SOURCES_DIR}/external
+  RESULT_VARIABLE rv
+)
+
+if (NOT rv EQUAL 0)
+  message(FATAL_ERROR "error: could not extract actor-framework-0.17.4.tar.gz!")
+endif()
+
 execute_process(
   COMMAND bash ${caf_tracing_SOURCE_DIR}/scripts/build_caf.sh
 )
