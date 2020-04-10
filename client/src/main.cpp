@@ -34,6 +34,9 @@ struct config : caf::actor_system_config {
 };
 
 void run_client(caf::actor_system& system, const config& config) noexcept {
+  fmt::print(stderr, ">>> run_client: host=\"{}\" port=\"{}\"\n", config.host,
+             config.port);
+
   const auto expected_remote_actor
     = caf::io::remote_actor<shared::server_actor_type>(system, config.host,
                                                        config.port);
@@ -111,8 +114,8 @@ int main(int argc, char** argv) {
   for (auto i = 0; i < argc; ++i) {
     if (i != 1) {
       const auto len = strlen(argv[i]);
-      auto* p = new char[len];
-      memcpy(p, argv[i], len);
+      auto* p = new char[len + 1];
+      memcpy(p, argv[i], len + 1);
       args.push_back(p);
     }
   }
@@ -121,6 +124,10 @@ int main(int argc, char** argv) {
     for (auto* p : args)
       delete[] p;
   });
+
+  for (char* p : args) {
+    fmt::print(stdout, "{}\n", p);
+  }
 
   return caf::exec_main<caf::io::middleman>(caf_main, argc - 1, args.data());
 }

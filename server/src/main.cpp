@@ -65,8 +65,8 @@ int main(int argc, char** argv) {
   for (auto i = 0; i < argc; ++i) {
     if (i != 1) {
       const auto len = strlen(argv[i]);
-      auto* p = new char[len];
-      memcpy(p, argv[i], len);
+      auto* p = new char[len + 1];
+      memcpy(p, argv[i], len + 1);
       args.push_back(p);
     }
   }
