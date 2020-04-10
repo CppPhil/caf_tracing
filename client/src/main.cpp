@@ -32,7 +32,7 @@ struct config : caf::actor_system_config {
 void run_client(caf::actor_system& system, const config& config) noexcept {
   const auto expected_remote_actor
     = caf::io::remote_actor<shared::server_actor_type>(system, config.host,
-                                                           config.port);
+                                                       config.port);
 
   if (!expected_remote_actor) {
     fmt::print(stderr, "Could not connect to remote actor!\n");
@@ -41,8 +41,7 @@ void run_client(caf::actor_system& system, const config& config) noexcept {
 
   const auto& remote_actor = *expected_remote_actor;
 
-  const auto client_actor = system.spawn(&client::client_actor,
-                                         remote_actor);
+  const auto client_actor = system.spawn(&client::client_actor, remote_actor);
 
   caf::scoped_actor self(system);
 
