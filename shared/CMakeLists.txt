@@ -2,14 +2,23 @@
 set(LIB_NAME shared_library)
 
 set(LIB_HEADERS
-    include/ip_address.hpp
-    include/atoms.hpp
     include/aprint.hpp
+    include/atoms.hpp
     include/client_actor_type.hpp
-    include/server_actor_type.hpp)
+    include/create_span.hpp
+    include/error.hpp
+    include/extract.hpp
+    include/inject.hpp
+    include/ip_address.hpp
+    include/server_actor_type.hpp
+    include/setup_tracer.hpp)
     
 set(LIB_SOURCES
-    src/ip_address.cpp)
+    src/create_span.cpp
+    src/extract.cpp
+    src/inject.cpp
+    src/ip_address.cpp
+    src/setup_tracer.cpp)
 
 add_library(
     ${LIB_NAME}
@@ -34,6 +43,7 @@ target_include_directories(
     PUBLIC
     ${CAF_INCLUDE_DIRS}
     ${caf_tracing_SOURCE_DIR}/shared/include
+    ${caf_tracing_SOURCE_DIR}/external/expected/include
 )
 
 target_compile_definitions(
