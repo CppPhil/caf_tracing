@@ -42,8 +42,7 @@ string(
   " -Werror -Wall -Wextra -Wcast-align -Wcast-qual -Wmissing-field-initializers -Wmissing-include-dirs -Wpointer-arith -Wstack-protector -Wstrict-aliasing=2 -Wunreachable-code -Wlogical-op -Wduplicated-cond -Wnull-dereference -Wno-unused-parameter"
 )
 string(APPEND CMAKE_CXX_FLAGS_DEBUG " -g -O0")
-string(APPEND CMAKE_CXX_FLAGS_RELEASE
-       " -O3 -march=native -funroll-loops -flto -fwhole-program -DNDEBUG")
+string(APPEND CMAKE_CXX_FLAGS_RELEASE " -O3 -DNDEBUG")
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -53,7 +52,9 @@ find_package(Threads REQUIRED)
 
 set(BUILD_TESTING false)
 set(JAEGERTRACING_BUILD_EXAMPLES false)
+# set(CMAKE_BUILD_TYPE_SAVED "${CMAKE_BUILD_TYPE}") set(CMAKE_BUILD_TYPE Debug)
 add_subdirectory(external/jaeger-client-cpp)
+# set(CMAKE_BUILD_TYPE "${CMAKE_BUILD_TYPE_SAVED}")
 
 add_subdirectory(external/GSL)
 
