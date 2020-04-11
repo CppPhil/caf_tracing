@@ -53,12 +53,9 @@ find_package(Threads REQUIRED)
 
 set(BUILD_TESTING false)
 set(JAEGERTRACING_BUILD_EXAMPLES false)
-# set(CMAKE_BUILD_TYPE_SAVED "${CMAKE_BUILD_TYPE}") set(CMAKE_BUILD_TYPE Debug)
 add_subdirectory(external/jaeger-client-cpp)
-# set(CMAKE_BUILD_TYPE "${CMAKE_BUILD_TYPE_SAVED}")
-
-add_subdirectory(external/GSL)
 
 add_subdirectory(client)
 add_subdirectory(server)
 add_subdirectory(shared)
+

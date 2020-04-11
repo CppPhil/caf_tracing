@@ -28,7 +28,7 @@ add_library(${LIB_NAME} OBJECT ${LIB_HEADERS} ${LIB_SOURCES})
 
 target_link_libraries(
   ${LIB_NAME} PUBLIC Threads::Threads ${CMAKE_DL_LIBS} ${CAF_LIBRARY_CORE}
-                     ${CAF_LIBRARY_IO} jaegertracing GSL)
+                     ${CAF_LIBRARY_IO} jaegertracing)
 
 target_include_directories(
   ${LIB_NAME}
@@ -38,3 +38,4 @@ target_include_directories(
 
 target_compile_definitions(${LIB_NAME} PUBLIC CAF_ENABLE_ACTOR_PROFILER
                                               FMT_HEADER_ONLY)
+
