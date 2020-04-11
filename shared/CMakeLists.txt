@@ -38,4 +38,3 @@ target_include_directories(
 
 target_compile_definitions(${LIB_NAME} PUBLIC CAF_ENABLE_ACTOR_PROFILER
                                               FMT_HEADER_ONLY)
-

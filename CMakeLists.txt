@@ -58,4 +58,3 @@ add_subdirectory(external/jaeger-client-cpp)
 add_subdirectory(client)
 add_subdirectory(server)
 add_subdirectory(shared)
-
