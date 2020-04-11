@@ -1,3 +1,5 @@
+#include <cstdio>
+
 #include <memory>
 
 #include <yaml-cpp/yaml.h>
@@ -13,9 +15,11 @@ public:
   ~Logger() override = default;
 
   void error(const std::string& message) override {
+    fprintf(stderr, "JAEGER ERROR: \"%s\"\n", message.c_str());
   }
 
   void info(const std::string& message) override {
+    printf("JAEGER INFO : \"%s\"\n", message.c_str());
   }
 };
 } // namespace
