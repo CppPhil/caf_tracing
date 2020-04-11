@@ -1,4 +1,7 @@
 #include <cstdio>
+#include <cstdlib>
+
+#include <new>
 
 #include <gsl/gsl_util>
 
@@ -55,7 +58,7 @@ int main(int argc, char** argv) {
   if (argc < 2) {
     fprintf(stderr,
             "No YAML config file was passed as a command line argument!\n");
-    return 1;
+    return EXIT_FAILURE;
   }
 
   shared::setup_tracer(argv[1], "caf_tracing-server");
@@ -65,7 +68,15 @@ int main(int argc, char** argv) {
   for (auto i = 0; i < argc; ++i) {
     if (i != 1) {
       const auto len = strlen(argv[i]);
-      auto* p = new char[len + 1];
+      auto* p = new (std::nothrow) char[len + 1];
+
+      if (p == nullptr) {
+        for (auto* ptr : args)
+          delete[] ptr;
+
+        return EXIT_FAILURE;
+      }
+
       memcpy(p, argv[i], len + 1);
       args.push_back(p);
     }
