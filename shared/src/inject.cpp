@@ -3,6 +3,7 @@
 #include "inject.hpp"
 
 namespace shared {
+namespace detail {
 tl::expected<std::string, error> inject(const opentracing::SpanContext& sc) {
   std::ostringstream oss;
 
@@ -19,4 +20,5 @@ tl::expected<std::string, error> inject(const opentracing::SpanContext& sc) {
 
   return oss.str();
 }
+} // namespace detail
 } // namespace shared

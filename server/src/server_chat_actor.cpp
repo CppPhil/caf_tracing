@@ -50,11 +50,7 @@ void on_client_disconnect(
 
   span->SetTag("goodbye_message", goodbye_message);
 
-  const auto inject_res = shared::inject(span->context());
-
-  if (!inject_res.has_value())
-    shared::aprint(self, "Couldn't inject span context for quit: \"{}\"\n",
-                   inject_res.error());
+  const auto inject_res = shared::inject(self, *span, "quit");
 
   auto& participants = self->state.participants;
 
@@ -79,7 +75,7 @@ void on_client_disconnect(
         return fmt::format("{} has left the chatroom: \"{}\"\n", nickname,
                            goodbye_message);
       }(),
-      inject_res.value_or(""));
+      inject_res);
   }
 }
 
@@ -95,13 +91,7 @@ void on_client_connect(self_pointer self, const std::string& nickname,
 
   span->SetTag("nickname", nickname);
 
-  const auto inject_res = shared::inject(span->context());
-
-  if (!inject_res.has_value())
-    shared::aprint(self, "Couldn't inject span context for join: \"{}\"\n",
-                   inject_res.error());
-  const auto inject_result = inject_res.value_or("");
-
+  const auto inject_result = shared::inject(self, *span, "join");
   auto& participants = self->state.participants;
 
   // Monitor the client so that we receive down_msgs if it crashes.
@@ -138,12 +128,7 @@ void on_chat(self_pointer self, const std::string& message,
 
   span->SetTag("message", message);
 
-  const auto inject_res = shared::inject(span->context());
-
-  if (!inject_res.has_value())
-    shared::aprint(self, "Couldn't inject span context for chat: \"{}\"\n",
-                   inject_res.error());
-
+  const auto inject_res = shared::inject(self, *span, "chat");
   auto& sender = self->current_sender();
   auto& participants = self->state.participants;
 
@@ -159,8 +144,7 @@ void on_chat(self_pointer self, const std::string& message,
         return participant.actor() != sender;
       },
       shared::chat_atom::value,
-      fmt::format("{}: \"{}\"\n", it->nickname(), message),
-      inject_res.value_or(""));
+      fmt::format("{}: \"{}\"\n", it->nickname(), message), inject_res);
   }
 }
 
@@ -173,12 +157,7 @@ std::tuple<std::vector<std::string>, std::string>
 on_ls(self_pointer self, const std::string& span_context) {
   auto span = shared::create_span(span_context, "ls (server)");
 
-  const auto inject_res = shared::inject(span->context());
-
-  if (!inject_res.has_value())
-    shared::aprint(self, "Couldn't inject span context for ls: \"{}\"\n",
-                   inject_res.error());
-
+  const auto inject_res = shared::inject(self, *span, "ls");
   auto& participants = self->state.participants;
 
   // Allocate enough storage for the nicknames.
@@ -188,7 +167,7 @@ on_ls(self_pointer self, const std::string& span_context) {
   std::transform(participants.begin(), participants.end(), nicknames.begin(),
                  std::mem_fn(&participant::nickname));
 
-  return std::make_tuple(std::move(nicknames), inject_res.value_or(""));
+  return std::make_tuple(std::move(nicknames), inject_res);
 }
 } // namespace
 

@@ -22,27 +22,18 @@ client_actor(shared::client_actor_type::pointer self,
 
       span->SetTag("nickname", nickname);
 
-      const auto inject_res = shared::inject(span->context());
-
-      if (!inject_res.has_value())
-        shared::aprint(self, "Couldn't inject span context for join: \"{}\"\n",
-                       inject_res.error());
+      const auto inject_res = shared::inject(self, *span, "join");
 
       // Delegate join message to the server.
-      self->send(remote_actor, atom, std::move(nickname), self,
-                 inject_res.value_or(""));
+      self->send(remote_actor, atom, std::move(nickname), self, inject_res);
     },
     [self, remote_actor](shared::ls_atom atom) {
       auto span = opentracing::Tracer::Global()->StartSpan("ls (client)");
 
-      const auto inject_res = shared::inject(span->context());
-
-      if (!inject_res.has_value())
-        shared::aprint(self, "Couldn't inject span context for ls \"{}\"\n",
-                       inject_res.error());
+      const auto inject_res = shared::inject(self, *span, "ls");
 
       // Pass the /ls request to the server and properly print the result.
-      self->request(remote_actor, caf::infinite, atom, inject_res.value_or(""))
+      self->request(remote_actor, caf::infinite, atom, inject_res)
         .then([self](const std::vector<std::string>& vector,
                      const std::string& span_context_str) {
           auto span = shared::create_span(span_context_str, "ls recv (client)");
@@ -60,30 +51,21 @@ client_actor(shared::client_actor_type::pointer self,
 
       span->SetTag("goodbye_message", goodbye_message);
 
-      const auto inject_res = shared::inject(span->context());
-
-      if (!inject_res.has_value())
-        shared::aprint(self, "Couldn't inject span context for quit \"{}\"\n",
-                       inject_res.error());
+      const auto inject_res = shared::inject(self, *span, "quit");
 
       // Delegate the quit message to the server.
-      self->send(remote_actor, atom, std::move(goodbye_message),
-                 inject_res.value_or(""));
+      self->send(remote_actor, atom, std::move(goodbye_message), inject_res);
     },
     [self, remote_actor](shared::local_chat_atom, std::string message) {
       auto span = opentracing::Tracer::Global()->StartSpan("chat (client)");
 
       span->SetTag("message", message);
 
-      const auto inject_res = shared::inject(span->context());
-
-      if (!inject_res.has_value())
-        shared::aprint(self, "Couldn't inject span context for chat \"{}\"\n",
-                       inject_res.error());
+      const auto inject_res = shared::inject(self, *span, "chat");
 
       // Send any chat messages stemming from the CLI to the server.
       self->send(remote_actor, shared::chat_atom::value, std::move(message),
-                 inject_res.value_or(""));
+                 inject_res);
     },
     [self](shared::chat_atom, const std::string& message,
            const std::string& span_context) {
@@ -101,12 +83,7 @@ client_actor(shared::client_actor_type::pointer self,
 
       span->SetTag("client_nickname", client_nickname);
 
-      const auto inject_res = shared::inject(span->context());
-
-      if (!inject_res.has_value())
-        shared::aprint(self,
-                       "Couldn't inject span context for ls_query: \"{}\"\n",
-                       inject_res.error());
+      const auto inject_res = shared::inject(self, *span, "ls_query");
 
       // Send an /ls request to the server and return whether the resulting
       // client list contains this local client.
@@ -116,7 +93,7 @@ client_actor(shared::client_actor_type::pointer self,
 
       self
         ->request(remote_actor, caf::infinite, shared::ls_atom::value,
-                  inject_res.value_or(""))
+                  inject_res)
         .then([client_nickname,
                response_promise](const std::vector<std::string>& result,
                                  const std::string& span_ctx_str) mutable {
