@@ -1,4 +1,2 @@
-Ensure that it works in debug & release mode.
-
 Clean up.
 
