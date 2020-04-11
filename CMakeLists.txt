@@ -42,7 +42,8 @@ string(
   " -Werror -Wall -Wextra -Wcast-align -Wcast-qual -Wmissing-field-initializers -Wmissing-include-dirs -Wpointer-arith -Wstack-protector -Wstrict-aliasing=2 -Wunreachable-code -Wlogical-op -Wduplicated-cond -Wnull-dereference -Wno-unused-parameter"
 )
 string(APPEND CMAKE_CXX_FLAGS_DEBUG " -g -O0")
-string(APPEND CMAKE_CXX_FLAGS_RELEASE " -O3 -DNDEBUG")
+string(APPEND CMAKE_CXX_FLAGS_RELEASE
+       " -O3 -march=native -funroll-loops -flto -DNDEBUG")
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
