@@ -5,6 +5,8 @@
 # Directory containing this bash script.
 readonly DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
+readonly PREV_DIR=$(pwd)
+
 readonly DOT_CLANG_FORMAT=$DIR/.clang-format
 
 delete_file_if_exists () {
@@ -13,17 +15,34 @@ delete_file_if_exists () {
     fi
 }
 
+format_cmake () {
+    cmakelists_file=$1
+    tmp_file="${cmakelists_file}.tmp"
+
+    cmake-format $cmakelists_file > $tmp_file
+    rm -f $cmakelists_file
+    mv $tmp_file $cmakelists_file
+}
+
 format () {
     cd $1
     delete_file_if_exists ./.clang-format
     cp $DOT_CLANG_FORMAT ./.clang-format
     find -name '*.cpp' -o -name '*.hh' -o -name '*.hpp' -o -name '*.h' | xargs clang-format -i
     rm -f ./.clang-format
+
+    format_cmake $(find -name 'CMakeLists.txt')
 }
+
+cd $DIR
+
+format_cmake $DIR/CMakeLists.txt
 
 # Format the source files.
 format $DIR/client
 format $DIR/server
 format $DIR/shared
+
+cd $PREV_DIR
 
 exit 0
