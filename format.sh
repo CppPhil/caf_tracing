@@ -10,28 +10,28 @@ readonly PREV_DIR=$(pwd)
 readonly DOT_CLANG_FORMAT=$DIR/.clang-format
 
 delete_file_if_exists () {
-    if [ -e $1 ]; then
-        rm -f $1
-    fi
+  if [ -e $1 ]; then
+    rm -f $1
+  fi
 }
 
 format_cmake () {
-    cmakelists_file=$1
-    tmp_file="${cmakelists_file}.tmp"
+  cmakelists_file=$1
+  tmp_file="${cmakelists_file}.tmp"
 
-    cmake-format $cmakelists_file > $tmp_file
-    rm -f $cmakelists_file
-    mv $tmp_file $cmakelists_file
+  cmake-format $cmakelists_file > $tmp_file
+  rm -f $cmakelists_file
+  mv $tmp_file $cmakelists_file
 }
 
 format () {
-    cd $1
-    delete_file_if_exists ./.clang-format
-    cp $DOT_CLANG_FORMAT ./.clang-format
-    find -name '*.cpp' -o -name '*.hh' -o -name '*.hpp' -o -name '*.h' | xargs clang-format -i
-    rm -f ./.clang-format
+  cd $1
+  delete_file_if_exists ./.clang-format
+  cp $DOT_CLANG_FORMAT ./.clang-format
+  find -name '*.cpp' -o -name '*.hh' -o -name '*.hpp' -o -name '*.h' | xargs clang-format -i
+  rm -f ./.clang-format
 
-    format_cmake $(find -name 'CMakeLists.txt')
+  format_cmake $(find -name 'CMakeLists.txt')
 }
 
 cd $DIR

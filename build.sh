@@ -1,8 +1,8 @@
 #!/bin/bash
 
 catch_errors() {
-    printf "\nbuild.sh failed!\n" >&2
-    exit 1
+  printf "\nbuild.sh failed!\n" >&2
+  exit 1
 }
 
 trap catch_errors ERR;
@@ -54,7 +54,7 @@ cd $DIR
 ./format.sh
 
 if [ ! -d build ]; then
-    mkdir build
+  mkdir build
 fi
 
 cd build

@@ -1,8 +1,8 @@
 #!/bin/bash
 
 catch_errors() {
-    printf "\nrun_client.sh failed!\n" >&2
-    exit 1
+  printf "\nrun_client.sh failed!\n" >&2
+  exit 1
 }
 
 trap catch_errors ERR;
