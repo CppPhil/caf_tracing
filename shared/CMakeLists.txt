@@ -3,6 +3,7 @@ set(LIB_NAME shared_library)
 
 set(LIB_HEADERS
     include/aprint.hpp
+    include/args.hpp
     include/atoms.hpp
     include/client_actor_type.hpp
     include/create_span.hpp
@@ -14,8 +15,14 @@ set(LIB_HEADERS
     include/setup_tracer.hpp
     include/source_location.hpp)
 
-set(LIB_SOURCES src/create_span.cpp src/error.cpp src/extract.cpp
-                src/inject.cpp src/ip_address.cpp src/setup_tracer.cpp)
+set(LIB_SOURCES
+    src/args.cpp
+    src/create_span.cpp
+    src/error.cpp
+    src/extract.cpp
+    src/inject.cpp
+    src/ip_address.cpp
+    src/setup_tracer.cpp)
 
 add_library(${LIB_NAME} OBJECT ${LIB_HEADERS} ${LIB_SOURCES})
 

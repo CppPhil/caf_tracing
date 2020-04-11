@@ -1,14 +1,11 @@
 #include <cstdio>
 #include <cstdlib>
 
-#include <new>
-
-#include <gsl/gsl_util>
-
 #include <fmt/format.h>
 
-#include "caf/io/all.hpp"
+#include <caf/io/all.hpp>
 
+#include "args.hpp"
 #include "ip_address.hpp"
 #include "server_chat_actor.hpp"
 #include "setup_tracer.hpp"
@@ -63,29 +60,8 @@ int main(int argc, char** argv) {
 
   shared::setup_tracer(argv[1], "caf_tracing-server");
 
-  static std::vector<char*> args;
+  static auto args = shared::Args::create(argc, argv,
+                                          [](int i) { return i != 1; });
 
-  for (auto i = 0; i < argc; ++i) {
-    if (i != 1) {
-      const auto len = strlen(argv[i]);
-      auto* p = new (std::nothrow) char[len + 1];
-
-      if (p == nullptr) {
-        for (auto* ptr : args)
-          delete[] ptr;
-
-        return EXIT_FAILURE;
-      }
-
-      memcpy(p, argv[i], len + 1);
-      args.push_back(p);
-    }
-  }
-
-  [[maybe_unused]] auto final_act = gsl::finally([] {
-    for (auto* p : args)
-      delete[] p;
-  });
-
-  return caf::exec_main<caf::io::middleman>(caf_main, argc - 1, args.data());
+  return caf::exec_main<caf::io::middleman>(caf_main, args.argc(), args.argv());
 }
