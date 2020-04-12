@@ -106,8 +106,7 @@ int main(int argc, char** argv) {
 
   shared::setup_tracer(argv[1], "caf_tracing-client");
 
-  static auto args = shared::Args::create(argc, argv,
-                                          [](int i) { return i != 1; });
+  static shared::args args(argc, argv, [](int i) { return i != 1; });
 
   return caf::exec_main<caf::io::middleman>(caf_main, args.argc(), args.argv());
 }

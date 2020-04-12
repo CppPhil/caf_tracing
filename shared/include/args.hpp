@@ -3,21 +3,19 @@
 #include <vector>
 
 namespace shared {
-class Args {
+class args {
 public:
-  static Args create(
+  args(
     int argc, char** argv,
     const std::function<bool(int)>& keep = [](int) { return true; });
 
-  ~Args();
+  ~args();
 
   int argc() const noexcept;
 
   char** argv() noexcept;
 
 private:
-  explicit Args(std::vector<char*>&& data) noexcept;
-
   std::vector<char*> data_;
 };
 } // namespace shared
