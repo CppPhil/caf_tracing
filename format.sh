@@ -30,8 +30,12 @@ format () {
   cp $DOT_CLANG_FORMAT ./.clang-format
   find -name '*.cpp' -o -name '*.hh' -o -name '*.hpp' -o -name '*.h' | xargs clang-format -i
   rm -f ./.clang-format
+  
+  file=$(find -name 'CMakeLists.txt')
 
-  format_cmake $(find -name 'CMakeLists.txt')
+  if [[ ! -z $file ]]; then
+    format_cmake $file
+  fi
 }
 
 cd $DIR
