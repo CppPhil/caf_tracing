@@ -662,3 +662,6 @@ build
 external/actor-framework-0.17.4
 external/actor-framework-0.17.4.tar.gz
 
+# documentation
+docs
+

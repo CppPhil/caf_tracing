@@ -41,6 +41,7 @@ void send(self_pointer self, const Filter& filter, const Ts&... xs) {
 ///                                             to disconnect.
 /// @param goodbye_message The goodbye message of the client
 ///                        (possibly empty).
+/// @param span_context The span context.
 void on_client_disconnect(
   self_pointer self,
   const caf::actor_addr& actor_address_of_disconnected_client,
