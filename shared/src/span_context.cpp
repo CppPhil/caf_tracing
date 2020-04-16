@@ -53,6 +53,23 @@ span_context::inject(const opentracing::Span& span) {
   return inject(span.context());
 }
 
+tl::expected<span_context, error>
+span_context::inject(const opentracing::Span* span_ptr) {
+  if (span_ptr == nullptr) {
+    const tl::expected<span_context, error> error_result(
+      SHARED_UNEXPECTED("span_ptr was equal to nullptr!"));
+    fmt::print(stderr, "INJECT FAILURE: \"{}\"\n", error_result.error());
+    return error_result;
+  }
+
+  return inject(*span_ptr);
+}
+
+tl::expected<span_context, error> span_context::inject(
+  const std::unique_ptr<opentracing::Span>& span_unique_ptr) {
+  return inject(span_unique_ptr.get());
+}
+
 tl::expected<std::unique_ptr<opentracing::SpanContext>, error>
 span_context::extract() const {
   auto exp = extract_impl(buffer_);

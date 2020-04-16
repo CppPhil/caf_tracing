@@ -20,6 +20,12 @@ public:
   static tl::expected<span_context, error>
   inject(const opentracing::Span& span);
 
+  static tl::expected<span_context, error>
+  inject(const opentracing::Span* span_ptr);
+
+  static tl::expected<span_context, error>
+  inject(const std::unique_ptr<opentracing::Span>& span_unique_ptr);
+
   tl::expected<std::unique_ptr<opentracing::SpanContext>, error>
   extract() const;
 
