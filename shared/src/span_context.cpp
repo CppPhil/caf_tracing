@@ -1,3 +1,5 @@
+#include <cstdio>
+
 #include <ostream>
 #include <utility>
 
@@ -37,8 +39,13 @@ tl::expected<span_context, error>
 span_context::inject(const opentracing::SpanContext& span_ctx) {
   auto expected_serialized_span_context = inject_impl(span_ctx);
 
-  if (!expected_serialized_span_context.has_value())
-    return tl::make_unexpected(expected_serialized_span_context.error());
+  if (!expected_serialized_span_context.has_value()) {
+    fmt::print(
+      stderr, "INJECT FAILURE: \"{}\"\n",
+      expected_serialized_span_context
+        .error()) return tl::make_unexpected(expected_serialized_span_context
+                                               .error());
+  }
 
   return span_context(*std::move(expected_serialized_span_context));
 }
@@ -54,7 +61,9 @@ tl::expected<std::unique_ptr<opentracing::SpanContext>, error> extract() const {
   if (!exp.has_value()) {
     std::ostringstream oss;
     oss << exp.error();
-    return SHARED_UNEXPECTED(oss.str());
+    auto str = oss.str();
+    fmt::print(stderr, "EXTRACT FAILURE: \"{}\"\n", str);
+    return SHARED_UNEXPECTED(std::move(str));
   }
 
   return *std::move(exp);
