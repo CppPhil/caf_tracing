@@ -55,7 +55,7 @@ span_context::inject(const opentracing::Span& span) {
 
 tl::expected<std::unique_ptr<opentracing::SpanContext>, error>
 span_context::extract() const {
-  auto exp = extract_impl(string);
+  auto exp = extract_impl(buffer_);
 
   if (!exp.has_value()) {
     std::ostringstream oss;
