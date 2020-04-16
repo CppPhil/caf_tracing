@@ -9,6 +9,7 @@
 #include "ip_address.hpp"
 #include "server_chat_actor.hpp"
 #include "setup_tracer.hpp"
+#include "span_context.hpp"
 
 namespace {
 struct config : caf::actor_system_config {
@@ -17,6 +18,7 @@ struct config : caf::actor_system_config {
 
   config() : ip_address(shared::ip_address().value_or("localhost")) {
     add_message_type<shared::client_actor_type>("client_actor_type");
+    add_message_type<shared::span_context>("span_context");
 
     opt_group(custom_options_, "global").add(port, "port,p", "port");
   }
