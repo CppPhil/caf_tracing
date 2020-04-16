@@ -45,7 +45,8 @@ void send(self_pointer self, const Filter& filter, const Ts&... xs) {
 void on_client_disconnect(
   self_pointer self,
   const caf::actor_addr& actor_address_of_disconnected_client,
-  const std::string& goodbye_message, const span_context& span_ctx) noexcept {
+  const std::string& goodbye_message,
+  const shared::span_context& span_ctx) noexcept {
   auto span = shared::create_span(span_ctx, "quit (server)");
   span->SetTag("goodbye_message", goodbye_message);
 
@@ -72,7 +73,7 @@ void on_client_disconnect(
         return fmt::format("{} has left the chatroom: \"{}\"\n", nickname,
                            goodbye_message);
       }(),
-      span_context::inject(span).value_or(""));
+      shared::span_context::inject(span).value_or(""));
   }
 }
 
@@ -83,12 +84,12 @@ void on_client_disconnect(
 /// @param span_ctx The span context.
 void on_client_connect(self_pointer self, const std::string& nickname,
                        const shared::client_actor_type& client_actor,
-                       const span_context& span_ctx) {
-  auto span = shared::create_span(span_context, "join (server)");
+                       const shared::span_context& span_ctx) {
+  auto span = shared::create_span(shared::span_context, "join (server)");
   span->SetTag("nickname", nickname);
   auto& participants = self->state.participants;
 
-  const auto inject_result = span_context::inject(span).value_or("");
+  const auto inject_result = shared::span_context::inject(span).value_or("");
 
   // Monitor the client so that we receive down_msgs if it crashes.
   self->monitor(client_actor);
@@ -119,7 +120,7 @@ void on_client_connect(self_pointer self, const std::string& nickname,
 /// @param message The message received from a client.
 /// @param span_ctx The span context.
 void on_chat(self_pointer self, const std::string& message,
-             const span_context& span_ctx) {
+             const shared::span_context& span_ctx) {
   auto span = shared::create_span(span_ctx, "chat (server)");
   span->SetTag("message", message);
   auto& sender = self->current_sender();
@@ -138,7 +139,7 @@ void on_chat(self_pointer self, const std::string& message,
       },
       shared::chat_atom::value,
       fmt::format("{}: \"{}\"\n", it->nickname(), message),
-      span_context::inject(span).value_or(""));
+      shared::span_context::inject(span).value_or(""));
   }
 }
 
@@ -148,7 +149,7 @@ void on_chat(self_pointer self, const std::string& message,
 /// @return A vector of the nicknames of the chat participants and the span
 ///         context.
 std::tuple<std::vector<std::string>, std::string>
-on_ls(self_pointer self, const span_context& span_ctx) {
+on_ls(self_pointer self, const shared::span_context& span_ctx) {
   auto span = shared::create_span(span_ctx, "ls (server)");
   auto& participants = self->state.participants;
 
@@ -160,7 +161,7 @@ on_ls(self_pointer self, const span_context& span_ctx) {
                  std::mem_fn(&participant::nickname));
 
   return std::make_tuple(std::move(nicknames),
-                         span_context::inject(span).value_or(""));
+                         shared::span_context::inject(span).value_or(""));
 }
 } // namespace
 
@@ -168,17 +169,19 @@ shared::server_actor_type::behavior_type chat_server(self_pointer self) {
   return {
     [self](caf::join_atom, const std::string& nickname,
            const shared::client_actor_type& client_actor,
-           const span_context& span_ctx) {
+           const shared::span_context& span_ctx) {
       on_client_connect(self, nickname, client_actor, span_ctx);
     },
     [self](shared::chat_atom, const std::string& message,
-           const span_context& span_ctx) { on_chat(self, message, span_ctx); },
+           const shared::span_context& span_ctx) {
+      on_chat(self, message, span_ctx);
+    },
     [self](caf::leave_atom, const std::string& goodbye_message,
-           const span_context& span_ctx) {
+           const shared::span_context& span_ctx) {
       on_client_disconnect(self, self->current_sender()->address(),
                            goodbye_message, span_ctx);
     },
-    [self](shared::ls_atom, const span_context& span_ctx) {
+    [self](shared::ls_atom, const shared::span_context& span_ctx) {
       return on_ls(self, span_ctx);
     },
   };
