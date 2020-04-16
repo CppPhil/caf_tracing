@@ -12,6 +12,10 @@ namespace shared {
 namespace {
 class Logger : public jaegertracing::logging::Logger {
 public:
+  Logger() {
+    setbuf(stdout, nullptr);
+  }
+
   ~Logger() override = default;
 
   void error(const std::string& message) override {
