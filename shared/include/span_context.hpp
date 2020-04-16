@@ -1,4 +1,5 @@
 #pragma once
+#include <iosfwd>
 #include <string>
 #include <type_traits>
 
@@ -21,6 +22,9 @@ public:
 
   tl::expected<std::unique_ptr<opentracing::SpanContext>, error>
   extract() const;
+
+  friend std::ostream& operator<<(std::ostream& os,
+                                  const span_context& span_ctx);
 
   template <class Inspector>
   friend std::enable_if_t<Inspector::reads_state,

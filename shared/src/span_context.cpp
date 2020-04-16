@@ -1,4 +1,7 @@
+#include <ostream>
 #include <utility>
+
+#include <fmt/format.h>
 
 #include "inject.hpp"
 #include "span_context.hpp"
@@ -55,6 +58,11 @@ tl::expected<std::unique_ptr<opentracing::SpanContext>, error> extract() const {
   }
 
   return *std::move(exp);
+}
+
+std::ostream& operator<<(std::ostream& os, const span_context& span_ctx) {
+  return os << fmt::format("span_context{\"buffer_\": \"{}\"}",
+                           span_ctx.buffer_);
 }
 
 span_context::span_context(std::string&& serialized_span_context)
