@@ -20,16 +20,18 @@ client_actor(shared::client_actor_type::pointer self,
       span->SetTag("nickname", nickname);
 
       // Delegate join message to the server.
-      self->send(remote_actor, atom, std::move(nickname), self,
-                 shared::span_context::inject(span).value_or(""));
+      self->send(
+        remote_actor, atom, std::move(nickname), self,
+        shared::span_context::inject(span).value_or((shared::span_context())));
     },
     [self, remote_actor](shared::ls_atom atom) {
       auto span = opentracing::Tracer::Global()->StartSpan("ls (client)");
 
       // Pass the /ls request to the server and properly print the result.
       self
-        ->request(remote_actor, caf::infinite, atom,
-                  shared::span_context::inject(span).value_or(""))
+        ->request(
+          remote_actor, caf::infinite, atom,
+          shared::span_context::inject(span).value_or((shared::span_context())))
         .then([self](const std::vector<std::string>& vector,
                      const shared::span_context& span_ctx) {
           auto span = shared::create_span(span_ctx, "ls recv (client)");
@@ -47,16 +49,18 @@ client_actor(shared::client_actor_type::pointer self,
       span->SetTag("goodbye_message", goodbye_message);
 
       // Delegate the quit message to the server.
-      self->send(remote_actor, atom, std::move(goodbye_message),
-                 shared::span_context::inject(span).value_or(""));
+      self->send(
+        remote_actor, atom, std::move(goodbye_message),
+        shared::span_context::inject(span).value_or((shared::span_context())));
     },
     [self, remote_actor](shared::local_chat_atom, std::string message) {
       auto span = opentracing::Tracer::Global()->StartSpan("chat (client)");
       span->SetTag("message", message);
 
       // Send any chat messages stemming from the CLI to the server.
-      self->send(remote_actor, shared::chat_atom::value, std::move(message),
-                 shared::span_context::inject(span).value_or(""));
+      self->send(
+        remote_actor, shared::chat_atom::value, std::move(message),
+        shared::span_context::inject(span).value_or((shared::span_context())));
     },
     [self](shared::chat_atom, const std::string& message,
            const shared::span_context& span_ctx) {
@@ -79,8 +83,9 @@ client_actor(shared::client_actor_type::pointer self,
       auto response_promise = self->make_response_promise<bool>();
 
       self
-        ->request(remote_actor, caf::infinite, shared::ls_atom::value,
-                  shared::span_context::inject(span).value_or(""))
+        ->request(
+          remote_actor, caf::infinite, shared::ls_atom::value,
+          shared::span_context::inject(span).value_or((shared::span_context())))
         .then([client_nickname,
                response_promise](const std::vector<std::string>& result,
                                  const shared::span_context& span_ctx) mutable {

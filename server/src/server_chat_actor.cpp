@@ -73,7 +73,7 @@ void on_client_disconnect(
         return fmt::format("{} has left the chatroom: \"{}\"\n", nickname,
                            goodbye_message);
       }(),
-      shared::span_context::inject(span).value_or(""));
+      shared::span_context::inject(span).value_or((shared::span_context())));
   }
 }
 
@@ -89,7 +89,8 @@ void on_client_connect(self_pointer self, const std::string& nickname,
   span->SetTag("nickname", nickname);
   auto& participants = self->state.participants;
 
-  const auto inject_result = shared::span_context::inject(span).value_or("");
+  const auto inject_result
+    = shared::span_context::inject(span).value_or((shared::span_context()));
 
   // Monitor the client so that we receive down_msgs if it crashes.
   self->monitor(client_actor);
@@ -139,7 +140,7 @@ void on_chat(self_pointer self, const std::string& message,
       },
       shared::chat_atom::value,
       fmt::format("{}: \"{}\"\n", it->nickname(), message),
-      shared::span_context::inject(span).value_or(""));
+      shared::span_context::inject(span).value_or((shared::span_context())));
   }
 }
 
@@ -148,7 +149,7 @@ void on_chat(self_pointer self, const std::string& message,
 /// @param span_ctx The span context.
 /// @return A vector of the nicknames of the chat participants and the span
 ///         context.
-std::tuple<std::vector<std::string>, std::string>
+std::tuple<std::vector<std::string>, shared::span_context>
 on_ls(self_pointer self, const shared::span_context& span_ctx) {
   auto span = shared::create_span(span_ctx, "ls (server)");
   auto& participants = self->state.participants;
@@ -160,8 +161,9 @@ on_ls(self_pointer self, const shared::span_context& span_ctx) {
   std::transform(participants.begin(), participants.end(), nicknames.begin(),
                  std::mem_fn(&participant::nickname));
 
-  return std::make_tuple(std::move(nicknames),
-                         shared::span_context::inject(span).value_or(""));
+  return std::make_tuple(
+    std::move(nicknames),
+    shared::span_context::inject(span).value_or((shared::span_context())));
 }
 } // namespace
 
