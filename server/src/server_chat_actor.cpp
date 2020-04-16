@@ -85,7 +85,7 @@ void on_client_disconnect(
 void on_client_connect(self_pointer self, const std::string& nickname,
                        const shared::client_actor_type& client_actor,
                        const shared::span_context& span_ctx) {
-  auto span = shared::create_span(shared::span_context, "join (server)");
+  auto span = shared::create_span(span_ctx, "join (server)");
   span->SetTag("nickname", nickname);
   auto& participants = self->state.participants;
 

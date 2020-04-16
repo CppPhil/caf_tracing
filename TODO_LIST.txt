@@ -1,3 +1,5 @@
+Make the trash compile (somehow)
+
 Try to send the crappy span_context type thingie as is for now or something
 
 Create wrapper
