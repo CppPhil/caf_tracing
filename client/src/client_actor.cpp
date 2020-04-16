@@ -8,6 +8,7 @@
 #include "atoms.hpp"
 #include "client_actor.hpp"
 #include "create_span.hpp"
+#include "span_context.hpp"
 
 namespace client {
 shared::client_actor_type::behavior_type
