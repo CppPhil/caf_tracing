@@ -50,7 +50,7 @@ span_context::inject(const opentracing::SpanContext& span_ctx) {
 
 tl::expected<span_context, error>
 span_context::inject(const opentracing::Span& span) {
-  return create(span.context());
+  return inject(span.context());
 }
 
 tl::expected<std::unique_ptr<opentracing::SpanContext>, error> extract() const {
