@@ -6,3 +6,6 @@ Create wrapper
  -> Wrap the types in the shared namespace thingie.
  -> Wrap the receiving
 
+Make it so that the jaeger tracing data stuff
+is sent over HTTP
+
