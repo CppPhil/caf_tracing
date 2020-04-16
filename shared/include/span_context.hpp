@@ -26,6 +26,10 @@ public:
   static tl::expected<span_context, error>
   inject(const std::unique_ptr<opentracing::Span>& span_unique_ptr);
 
+  span_context();
+
+  explicit span_context(std::string serialized_span_context);
+
   tl::expected<std::unique_ptr<opentracing::SpanContext>, error>
   extract() const;
 
@@ -49,8 +53,6 @@ public:
   }
 
 private:
-  explicit span_context(std::string&& serialized_span_context);
-
   std::string buffer_;
 };
 } // namespace shared

@@ -70,6 +70,15 @@ tl::expected<span_context, error> span_context::inject(
   return inject(span_unique_ptr.get());
 }
 
+span_context::span_context() : span_context("") {
+  // nop
+}
+
+span_context::span_context(std::string serialized_span_context)
+  : buffer_(std::move(serialized_span_context)) {
+  // nop
+}
+
 tl::expected<std::unique_ptr<opentracing::SpanContext>, error>
 span_context::extract() const {
   auto exp = extract_impl(buffer_);
@@ -88,9 +97,5 @@ span_context::extract() const {
 std::ostream& operator<<(std::ostream& os, const span_context& span_ctx) {
   return os << fmt::format("span_context{\"buffer_\": \"{}\"}",
                            span_ctx.buffer_);
-}
-
-span_context::span_context(std::string&& serialized_span_context)
-  : buffer_(std::move(serialized_span_context)) {
 }
 } // namespace shared
