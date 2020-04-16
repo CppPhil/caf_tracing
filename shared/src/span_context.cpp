@@ -40,11 +40,9 @@ span_context::inject(const opentracing::SpanContext& span_ctx) {
   auto expected_serialized_span_context = inject_impl(span_ctx);
 
   if (!expected_serialized_span_context.has_value()) {
-    fmt::print(
-      stderr, "INJECT FAILURE: \"{}\"\n",
-      expected_serialized_span_context
-        .error()) return tl::make_unexpected(expected_serialized_span_context
-                                               .error());
+    fmt::print(stderr, "INJECT FAILURE: \"{}\"\n",
+               expected_serialized_span_context.error());
+    return tl::make_unexpected(expected_serialized_span_context.error());
   }
 
   return span_context(*std::move(expected_serialized_span_context));
