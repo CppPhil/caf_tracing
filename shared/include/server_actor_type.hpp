@@ -13,5 +13,5 @@ using server_actor_type = caf::typed_actor<
   caf::reacts_to<chat_atom, std::string, span_context>,
   caf::reacts_to<caf::leave_atom, std::string, span_context>,
   caf::replies_to<ls_atom, span_context>::with<std::vector<std::string>,
-                                               std::string>>;
+                                               span_context>>;
 } // namespace shared
