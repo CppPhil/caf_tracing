@@ -53,7 +53,8 @@ span_context::inject(const opentracing::Span& span) {
   return inject(span.context());
 }
 
-tl::expected<std::unique_ptr<opentracing::SpanContext>, error> extract() const {
+tl::expected<std::unique_ptr<opentracing::SpanContext>, error>
+span_context::extract() const {
   auto exp = extract_impl(string);
 
   if (!exp.has_value()) {
