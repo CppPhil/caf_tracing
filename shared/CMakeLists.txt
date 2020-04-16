@@ -8,21 +8,14 @@ set(LIB_HEADERS
     include/client_actor_type.hpp
     include/create_span.hpp
     include/error.hpp
-    include/extract.hpp
-    include/inject.hpp
     include/ip_address.hpp
     include/server_actor_type.hpp
     include/setup_tracer.hpp
-    include/source_location.hpp)
+    include/source_location.hpp
+    include/span_context.hpp)
 
-set(LIB_SOURCES
-    src/args.cpp
-    src/create_span.cpp
-    src/error.cpp
-    src/extract.cpp
-    src/inject.cpp
-    src/ip_address.cpp
-    src/setup_tracer.cpp)
+set(LIB_SOURCES src/args.cpp src/create_span.cpp src/error.cpp
+                src/ip_address.cpp src/setup_tracer.cpp src/span_context.cpp)
 
 add_library(${LIB_NAME} OBJECT ${LIB_HEADERS} ${LIB_SOURCES})
 
