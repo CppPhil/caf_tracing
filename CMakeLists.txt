@@ -51,8 +51,12 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 find_package(Threads REQUIRED)
 
-set(BUILD_TESTING false)
-set(JAEGERTRACING_BUILD_EXAMPLES false)
+set(BUILD_TESTING
+    OFF
+    CACHE BOOL "Build jaeger tests" FORCE)
+set(JAEGERTRACING_BUILD_EXAMPLES
+    OFF
+    CACHE BOOL "Build examples" FORCE)
 add_subdirectory(external/jaeger-client-cpp)
 
 add_subdirectory(client)
