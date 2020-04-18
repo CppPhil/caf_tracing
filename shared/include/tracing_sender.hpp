@@ -77,6 +77,13 @@ public:
       span_context::inject(span_).value_or((shared::span_context())));
   }
 
+  template <class... Ts>
+  decltype(auto) request(Ts&&... xs) {
+    return self_->request(
+      std::forward<Ts>(xs)...,
+      span_context::inject(span_).value_or((shared::span_context())));
+  }
+
 private:
   T self_;
   std::unique_ptr<opentracing::Span> span_;
