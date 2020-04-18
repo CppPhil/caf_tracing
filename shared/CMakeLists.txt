@@ -2,6 +2,7 @@
 set(LIB_NAME shared_library)
 
 set(LIB_HEADERS
+    include/actor_system_config.hpp
     include/aprint.hpp
     include/args.hpp
     include/atoms.hpp
@@ -14,8 +15,14 @@ set(LIB_HEADERS
     include/source_location.hpp
     include/span_context.hpp)
 
-set(LIB_SOURCES src/args.cpp src/create_span.cpp src/error.cpp
-                src/ip_address.cpp src/setup_tracer.cpp src/span_context.cpp)
+set(LIB_SOURCES
+    src/actor_system_config.cpp
+    src/args.cpp
+    src/create_span.cpp
+    src/error.cpp
+    src/ip_address.cpp
+    src/setup_tracer.cpp
+    src/span_context.cpp)
 
 add_library(${LIB_NAME} OBJECT ${LIB_HEADERS} ${LIB_SOURCES})
 

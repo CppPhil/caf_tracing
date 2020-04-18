@@ -1,7 +1,4 @@
 Create wrapper
- -> Do custom actor_system_config base that
-    registers the span_context type in its
-    default constructor.
  -> Wrap the sending
  -> Wrap the types in the shared namespace thingie.
  -> Wrap the receiving
