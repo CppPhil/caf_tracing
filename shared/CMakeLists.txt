@@ -14,6 +14,8 @@ set(LIB_HEADERS
     include/setup_tracer.hpp
     include/source_location.hpp
     include/span_context.hpp
+    include/traced/reacts_to.hpp
+    include/traced/replies_to.hpp
     include/tracing_sender.hpp)
 
 set(LIB_SOURCES
