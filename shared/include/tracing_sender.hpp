@@ -39,7 +39,7 @@ public:
   }
 
   std::string BaggageItem(opentracing::string_view restricted_key) const {
-    span_->BaggageItem(restricted_key);
+    return span_->BaggageItem(restricted_key);
   }
 
   void Log(std::initializer_list<
@@ -70,6 +70,11 @@ public:
     return span_->tracer();
   }
 
+  T underlying() const {
+    return self_;
+  }
+
+  // TODO: Consider making these so that they're called using operator->
   template <class... Ts>
   decltype(auto) send(Ts&&... xs) {
     return self_->send(

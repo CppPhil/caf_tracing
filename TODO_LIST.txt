@@ -1,7 +1,7 @@
 Create wrapper
- -> Wrap the sending
  -> Wrap the types for the typed_actors. 
  -> Wrap the receiving
+ -> In source TODOs
 
 Make it so that the jaeger tracing data stuff
 is sent over HTTP
