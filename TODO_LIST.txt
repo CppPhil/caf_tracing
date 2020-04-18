@@ -1,6 +1,6 @@
 Create wrapper
  -> Wrap the sending
- -> Wrap the types in the shared namespace thingie.
+ -> Wrap the types for the typed_actors. 
  -> Wrap the receiving
 
 Make it so that the jaeger tracing data stuff
