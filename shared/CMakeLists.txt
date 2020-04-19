@@ -39,6 +39,7 @@ target_include_directories(
   PUBLIC ${CAF_INCLUDE_DIRS}
          ${caf_tracing_SOURCE_DIR}/shared/include
          ${caf_tracing_SOURCE_DIR}/external/expected/include
+         ${caf_tracing_SOURCE_DIR}/external/optional/include
          ${caf_tracing_SOURCE_DIR}/external/fmtlib/include
          ${caf_tracing_SOURCE_DIR}/external/gsl/include
          ${caf_tracing_SOURCE_DIR}/external/philslib/include)

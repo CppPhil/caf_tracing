@@ -3,17 +3,24 @@
 
 #include <caf/all.hpp>
 
+#include <tl/optional.hpp>
+
 #include <pl/meta/remove_cvref.hpp>
 
+#include "create_span.hpp"
 #include "message.hpp"
 
 namespace shared {
 template <class T>
 class tracing_sender {
 public:
-  tracing_sender(T self, opentracing::string_view operation_name)
+  tracing_sender(T self, opentracing::string_view operation_name,
+                 tl::optional<span_context> parent_span = tl::nullopt)
     : self_(std::move(self)),
-      span_(opentracing::Tracer::Global()->StartSpan(operation_name)) {
+      span_(parent_span.has_value()
+              ? create_span(*parent_span, std::string(operation_name.begin(),
+                                                      operation_name.end()))
+              : opentracing::Tracer::Global()->StartSpan(operation_name)) {
   }
 
   void Finish(std::initializer_list<

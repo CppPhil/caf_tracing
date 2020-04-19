@@ -4,10 +4,13 @@
 
 #include <fmt/format.h>
 
+#include <tl/optional.hpp>
+
 #include "aprint.hpp"
 #include "create_span.hpp"
 #include "server_chat_actor.hpp"
 #include "span_context.hpp"
+#include "tracing_sender.hpp"
 
 namespace server {
 namespace {
@@ -17,18 +20,24 @@ using self_pointer
 /// Sends something to all participants matching the given filter.
 /// @tparam Filter The type of `filter`.
 /// @tparam Ts A template type parameter pack of the arguments to send.
-/// @param self The server chat actor.
+/// @param operation_name The operation name to use for the tracing Span.
+/// @param parent_span The (optional) parent Span to use.
+/// @param self_ The server chat actor.
 /// @param filter The filter to apply. The signature of the operator() must be
 ///               bool operator(const participant&)
 /// @param xs The arguments to send to all participants satisfying the filter
 ///           predicate.
 template <class Filter, class... Ts>
-void send(self_pointer self, const Filter& filter, const Ts&... xs) {
-  auto& participants = self->state.participants;
+void send(opentracing::string_view operation_name,
+          tl::optional<shared::span_context> parent_span, self_pointer self_,
+          const Filter& filter, const Ts&... xs) {
+  auto& participants = self_->state.participants;
+
+  shared::tracing_sender self{self_, operation_name, parent_span};
 
   for (const auto& participant : participants)
     if (filter(participant))
-      self->send(participant.actor(), xs...);
+      self.send(participant.actor(), xs...);
 }
 
 /// Handles client disconnect.
@@ -65,6 +74,9 @@ void on_client_disconnect(
     // Send all clients an appropriate chat message containing the goodbye
     // message if there's one.
     send(
+      "server: send chat message (disconnect)",
+      tl::make_optional(
+        shared::span_context::inject(span).value_or((shared::span_context()))),
       self, [](const participant&) { return true; }, shared::chat_atom::value,
       [&goodbye_message, &nickname] {
         if (goodbye_message.empty())
@@ -72,8 +84,7 @@ void on_client_disconnect(
 
         return fmt::format("{} has left the chatroom: \"{}\"\n", nickname,
                            goodbye_message);
-      }(),
-      shared::span_context::inject(span).value_or((shared::span_context())));
+      }());
   }
 }
 
@@ -108,6 +119,7 @@ void on_client_connect(self_pointer self, const std::string& nickname,
 
   // Inform all other participants about the new client.
   send(
+    "server: send chat message (connect)", tl::make_optional(inject_result),
     self,
     [&client_actor](const participant& participant) {
       return participant.actor() != client_actor;
@@ -134,6 +146,9 @@ void on_chat(self_pointer self, const std::string& message,
   if (it != participants.end()) { // If it was found
     // Send the chat message to all other chat participants.
     send(
+      "server: send chat message (chat)",
+      tl::make_optional(
+        shared::span_context::inject(span).value_or((shared::span_context()))),
       self,
       [&sender](const participant& participant) {
         return participant.actor() != sender;

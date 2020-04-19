@@ -17,7 +17,8 @@ client_actor(shared::client_actor_type::pointer self,
       self.SetTag("nickname", nickname);
 
       // Delegate join message to the server.
-      self.send(remote_actor, atom, std::move(nickname), self.underlying());
+      self.send(remote_actor, atom, std::move(nickname),
+                shared::client_actor_type(self.underlying()));
     },
     [self_ = self, remote_actor](shared::ls_atom atom) {
       shared::tracing_sender self{self_, "ls (client)"};
