@@ -12,6 +12,8 @@ namespace shared {
 template <class... Ts>
 class message {
 public:
+  message() = default;
+
   explicit message(span_context span_ctx, Ts... xs)
     : span_context_(std::move(span_ctx)), tuple_(std::move(xs)...) {
   }
