@@ -72,7 +72,7 @@ void send(opentracing::string_view operation_name,
 
   for (const auto& participant : participants)
     if (filter(participant))
-      self.send(participant.actor(), xs...);
+      self->send(participant.actor(), xs...);
 }
 
 /// Handles client disconnect.

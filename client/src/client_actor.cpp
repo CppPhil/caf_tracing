@@ -17,14 +17,14 @@ client_actor(shared::client_actor_type::pointer self,
       self.SetTag("nickname", nickname);
 
       // Delegate join message to the server.
-      self.send(remote_actor, atom, std::move(nickname),
-                shared::client_actor_type(self.underlying()));
+      self->send(remote_actor, atom, std::move(nickname),
+                 shared::client_actor_type(self.underlying()));
     },
     [self_ = self, remote_actor](shared::ls_atom atom) {
       shared::tracing_sender self{self_, "ls (client)"};
 
       // Pass the /ls request to the server and properly print the result.
-      self.request(remote_actor, caf::infinite, atom)
+      self->request(remote_actor, caf::infinite, atom)
         .then([self_ = self.underlying()](
                 const shared::message<std::vector<std::string>>& message) {
           const auto& [vector] = message.tuple();
@@ -46,14 +46,14 @@ client_actor(shared::client_actor_type::pointer self,
       self.SetTag("goodbye_message", goodbye_message);
 
       // Delegate the quit message to the server.
-      self.send(remote_actor, atom, std::move(goodbye_message));
+      self->send(remote_actor, atom, std::move(goodbye_message));
     },
     [self_ = self, remote_actor](shared::local_chat_atom, std::string message) {
       shared::tracing_sender self{self_, "chat (client)"};
       self.SetTag("message", message);
 
       // Send any chat messages stemming from the CLI to the server.
-      self.send(remote_actor, shared::chat_atom::value, std::move(message));
+      self->send(remote_actor, shared::chat_atom::value, std::move(message));
     },
     [self_ = self](shared::chat_atom, const shared::message<std::string>& msg) {
       const auto& [message] = msg.tuple();
@@ -75,7 +75,7 @@ client_actor(shared::client_actor_type::pointer self,
       // server side when performing an orderly shutdown.
       auto response_promise = self.underlying()->make_response_promise<bool>();
 
-      self.request(remote_actor, caf::infinite, shared::ls_atom::value)
+      self->request(remote_actor, caf::infinite, shared::ls_atom::value)
         .then(
           [client_nickname, response_promise](
             const shared::message<std::vector<std::string>>& message) mutable {
