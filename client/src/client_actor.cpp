@@ -25,9 +25,8 @@ client_actor(shared::client_actor_type::pointer self,
       // Pass the /ls request to the server and properly print the result.
       self.request(remote_actor, caf::infinite, atom)
         .then(
-          [self_ = self.underlying()](
-            const std::vector<std::string>& vector,
-            const shared::span_context& span_ctx) { // TODO: Wrap this somehow.
+          [self_ = self.underlying()](const std::vector<std::string>& vector,
+                                      const shared::span_context& span_ctx) {
             auto span = shared::create_span(span_ctx, "ls recv (client)");
 
             const auto to_print = fmt::format("Participants:\n[\n{}\n]\n",
@@ -53,9 +52,8 @@ client_actor(shared::client_actor_type::pointer self,
       // Send any chat messages stemming from the CLI to the server.
       self.send(remote_actor, shared::chat_atom::value, std::move(message));
     },
-    [self_
-     = self](shared::chat_atom, const std::string& message,
-             const shared::span_context& span_ctx) { // TODO: Wrap this somehow.
+    [self_ = self](shared::chat_atom, const std::string& message,
+                   const shared::span_context& span_ctx) {
       auto span = shared::create_span(span_ctx, "chat recv (client)");
       span->SetTag("message", message);
 
@@ -75,10 +73,9 @@ client_actor(shared::client_actor_type::pointer self,
       auto response_promise = self.underlying()->make_response_promise<bool>();
 
       self.request(remote_actor, caf::infinite, shared::ls_atom::value)
-        .then([client_nickname, response_promise](
-                const std::vector<std::string>& result,
-                const shared::span_context&
-                  span_ctx) mutable { // TODO: Wrap this somehow.
+        .then([client_nickname,
+               response_promise](const std::vector<std::string>& result,
+                                 const shared::span_context& span_ctx) mutable {
           auto span = shared::create_span(span_ctx, "ls query recv (client)");
           span->SetTag("client_nickname", client_nickname);
           span->SetTag("result", fmt::format("Participants:\n[\n{}\n]\n",
