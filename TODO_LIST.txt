@@ -1,6 +1,3 @@
-TODO: 
- Add JaegerTracing logs / tags / BaggageItems to the server actor.
-
 See: // TODO: Consider making these so that they're called using operator-> 
  -> // Also merge that back to the wrapper branch.
 

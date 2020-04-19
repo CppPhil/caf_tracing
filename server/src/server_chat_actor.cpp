@@ -6,6 +6,8 @@
 
 #include <tl/optional.hpp>
 
+#include <pl/meta/remove_cvref.hpp>
+
 #include "aprint.hpp"
 #include "create_span.hpp"
 #include "server_chat_actor.hpp"
@@ -16,6 +18,37 @@ namespace server {
 namespace {
 using self_pointer
   = shared::server_actor_type::stateful_pointer<server_chat_actor_state>;
+
+template <size_t Idx>
+struct arg {
+  static_assert(Idx <= 9, "Idx is too large!");
+
+  static constexpr char str[] = {'A', 'r', 'g', 'u',       'm', 'e',
+                                 'n', 't', ' ', Idx + '0', '\0'};
+};
+
+template <class T>
+opentracing::Value make_value(const T& x) {
+  using Stripped = pl::meta::remove_cvref_t<T>;
+
+  if constexpr (caf::is_atom_constant<Stripped>::value) {
+    return "caf::atom_constant<" + caf::to_string(x) + ">";
+  } else {
+    return x;
+  }
+}
+
+template <class TracingSender, size_t... Ints, class... Ts>
+void log_args_impl(TracingSender& tracing_sender, std::index_sequence<Ints...>,
+                   const Ts&... xs) {
+  tracing_sender.Log({std::make_pair(opentracing::string_view(arg<Ints>::str),
+                                     make_value(xs))...});
+}
+
+template <class TracingSender, class... Ts>
+void log_args(TracingSender& tracing_sender, const Ts&... xs) {
+  log_args_impl(tracing_sender, (std::index_sequence_for<Ts...>()), xs...);
+}
 
 /// Sends something to all participants matching the given filter.
 /// @tparam Filter The type of `filter`.
@@ -34,6 +67,8 @@ void send(opentracing::string_view operation_name,
   auto& participants = self_->state.participants;
 
   shared::tracing_sender self{self_, operation_name, parent_span};
+
+  log_args(self, xs...);
 
   for (const auto& participant : participants)
     if (filter(participant))
@@ -174,6 +209,8 @@ on_ls(self_pointer self, const shared::span_context& span_ctx) {
   // Map the nicknames into the vector.
   std::transform(participants.begin(), participants.end(), nicknames.begin(),
                  std::mem_fn(&participant::nickname));
+
+  span->SetTag("nicknames", caf::join(nicknames, ", "));
 
   return shared::message(
     shared::span_context::inject(span).value_or((shared::span_context())),
