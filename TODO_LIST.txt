@@ -1,5 +1,8 @@
-See: // TODO: Consider making these so that they're called using operator-> 
+TODO: 
+  + Implement it so that it uses a custom message<span_context, Args...> type to send / receive the messages everywhere.
 
+See: // TODO: Consider making these so that they're called using operator-> 
+ -> // Also merge that back to the wrapper branch.
 
 Make it so that the jaeger tracing data stuff
 is sent over HTTP
