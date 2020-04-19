@@ -28,7 +28,7 @@ client_actor(shared::client_actor_type::pointer self,
                 const shared::message<std::vector<std::string>>& message) {
           const auto& [vector] = message.tuple();
 
-          auto span = shared::create_span(message.span_context(),
+          auto span = shared::create_span(message.span_ctx(),
                                           "ls recv (client)");
 
           const auto to_print = fmt::format("Participants:\n[\n{}\n]\n",
@@ -56,7 +56,7 @@ client_actor(shared::client_actor_type::pointer self,
     },
     [self_ = self](const shared::message<shared::chat_atom, std::string>& msg) {
       const auto& [atom, message] = msg.tuple();
-      auto span = shared::create_span(msg.span_context(), "chat recv (client)");
+      auto span = shared::create_span(msg.span_ctx(), "chat recv (client)");
       span->SetTag("message", message);
 
       // Print any chat messages received from the remote server actor.
@@ -79,7 +79,7 @@ client_actor(shared::client_actor_type::pointer self,
           [client_nickname, response_promise](
             const shared::message<std::vector<std::string>>& message) mutable {
             const auto& [result] = message.tuple();
-            auto span = shared::create_span(message.span_context(),
+            auto span = shared::create_span(message.span_ctx(),
                                             "ls query recv (client)");
             span->SetTag("client_nickname", client_nickname);
             span->SetTag("result", fmt::format("Participants:\n[\n{}\n]\n",
