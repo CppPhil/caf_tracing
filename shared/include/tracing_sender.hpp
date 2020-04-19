@@ -1,15 +1,136 @@
 #pragma once
 #include <utility>
 
+#include <caf/all.hpp>
+
 #include "span_context.hpp"
 
 namespace shared {
 template <class T>
 class tracing_sender {
 public:
+  class proxy {
+  public:
+    proxy(T& self, opentracing::Span* span) : self_(self), span_(span) {
+    }
+
+    template <caf::message_priority P = caf::message_priority::normal,
+              class Atom, class... Ts>
+    void send(const caf::group& dest, Atom&& atom, Ts&&... xs) {
+      self_->send(dest, std::forward<Atom>(atom), std::forward<Ts>(xs)...,
+                  mk_span_ctx());
+    }
+
+    template <caf::message_priority P = caf::message_priority::normal,
+              class Dest, class Atom, class... Ts>
+    void send(const Dest& dest, Atom&& atom, Ts&&... xs) {
+      self_->send(dest, std::forward<Atom>(atom), std::forward<Ts>(xs)...,
+                  mk_span_ctx());
+    }
+
+    template <caf::message_priority P = caf::message_priority::normal,
+              class Dest = caf::actor, class Atom, class... Ts>
+    void anon_send(const Dest& dest, Atom&& atom, Ts&&... xs) {
+      self_->anon_send(dest, std::forward<Atom>(atom), std::forward<Ts>(xs)...,
+                       mk_span_ctx());
+    }
+
+    template <caf::message_priority P = caf::message_priority::normal,
+              class Dest = caf::actor, class Atom, class... Ts>
+    void scheduled_send(const Dest& dest, caf::actor_clock::time_point timeout,
+                        Atom&& atom, Ts&&... xs) {
+      self_->scheduled_send(dest, std::move(timeout), std::forward<Atom>(atom),
+                            std::forward<Ts>(xs)..., mk_span_ctx());
+    }
+
+    template <class Atom, class... Ts>
+    void scheduled_send(const caf::group& dest,
+                        caf::actor_clock::time_point timeout, Atom&& atom,
+                        Ts&&... xs) {
+      self_->scheduled_send(dest, std::move(timeout), std::forward<Atom>(atom),
+                            std::forward<Ts>(xs)..., mk_span_ctx());
+    }
+
+    template <caf::message_priority P = caf::message_priority::normal,
+              class Rep = int, class Period = std::ratio<1>,
+              class Dest = caf::actor, class Atom, class... Ts>
+    void delayed_send(const Dest& dest,
+                      std::chrono::duration<Rep, Period> rel_timeout,
+                      Atom&& atom, Ts&&... xs) {
+      self_->delayed_send(dest, std::move(rel_timeout),
+                          std::forward<Atom>(atom), std::forward<Ts>(xs)...,
+                          mk_span_ctx());
+    }
+
+    template <class Rep = int, class Period = std::ratio<1>,
+              class Dest = caf::actor, class Atom, class... Ts>
+    void delayed_send(const caf::group& dest,
+                      std::chrono::duration<Rep, Period> rtime, Atom&& atom,
+                      Ts&&... xs) {
+      self_->delayed_send(dest, std::move(rtime), std::forward<Atom>(atom),
+                          std::forward<Ts>(xs)..., mk_span_ctx());
+    }
+
+    template <caf::message_priority P = caf::message_priority::normal,
+              class Dest = caf::actor, class Atom, class... Ts>
+    void scheduled_anon_send(const Dest& dest,
+                             caf::actor_clock::time_point timeout, Atom&& atom,
+                             Ts&&... xs) {
+      self_->scheduled_anon_send(dest, std::move(timeout),
+                                 std::forward<Atom>(atom),
+                                 std::forward<Ts>(xs)..., mk_span_ctx());
+    }
+
+    template <caf::message_priority P = caf::message_priority::normal,
+              class Dest = caf::actor, class Rep = int,
+              class Period = std::ratio<1>, class Atom, class... Ts>
+    void delayed_anon_send(const Dest& dest,
+                           std::chrono::duration<Rep, Period> rel_timeout,
+                           Atom&& atom, Ts&&... xs) {
+      self_->delayed_anon_send(dest, std::move(rel_timeout),
+                               std::forward<Atom>(atom),
+                               std::forward<Ts>(xs)..., mk_span_ctx());
+    }
+
+    template <class Rep = int, class Period = std::ratio<1>, class Atom,
+              class... Ts>
+    void delayed_anon_send(const caf::group& dest,
+                           std::chrono::duration<Rep, Period> rtime,
+                           Atom&& atom, Ts&&... xs) {
+      self_->delayed_anon_send(dest, std::move(rtime), std::forward<Atom>(atom),
+                               std::forward<Ts>(xs)..., mk_span_ctx());
+    }
+
+    template <caf::message_priority P = caf::message_priority::normal,
+              class Handle = caf::actor, class Atom, class... Ts>
+    auto request(const Handle& dest, const caf::duration& timeout, Atom&& atom,
+                 Ts&&... xs) {
+      return self_->request(dest, timeout, std::forward<Atom>(atom),
+                            std::forward<Ts>(xs)..., mk_span_ctx());
+    }
+
+    template <caf::message_priority P = caf::message_priority::normal,
+              class Rep = int, class Period = std::ratio<1>,
+              class Handle = caf::actor, class Atom, class... Ts>
+    auto request(const Handle& dest, std::chrono::duration<Rep, Period> timeout,
+                 Atom&& atom, Ts&&... xs) {
+      return self_->request(dest, std::move(timeout), std::forward<Atom>(atom),
+                            std::forward<Ts>(xs)..., mk_span_ctx());
+    }
+
+  private:
+    span_context mk_span_ctx() {
+      return span_context::inject(span_).value_or((shared::span_context()));
+    }
+
+    T& self_;
+    opentracing::Span* span_;
+  };
+
   tracing_sender(T self, opentracing::string_view operation_name)
     : self_(std::move(self)),
-      span_(opentracing::Tracer::Global()->StartSpan(operation_name)) {
+      span_(opentracing::Tracer::Global()->StartSpan(operation_name)),
+      proxy_(self_, span_.get()) {
   }
 
   void Finish(std::initializer_list<
@@ -74,23 +195,13 @@ public:
     return self_;
   }
 
-  // TODO: Consider making these so that they're called using operator->
-  template <class... Ts>
-  decltype(auto) send(Ts&&... xs) {
-    return self_->send(
-      std::forward<Ts>(xs)...,
-      span_context::inject(span_).value_or((shared::span_context())));
-  }
-
-  template <class... Ts>
-  decltype(auto) request(Ts&&... xs) {
-    return self_->request(
-      std::forward<Ts>(xs)...,
-      span_context::inject(span_).value_or((shared::span_context())));
+  proxy* operator->() noexcept {
+    return &proxy_;
   }
 
 private:
   T self_;
   std::unique_ptr<opentracing::Span> span_;
+  proxy proxy_;
 };
 } // namespace shared
