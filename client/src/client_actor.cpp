@@ -55,8 +55,8 @@ client_actor(shared::client_actor_type::pointer self,
       // Send any chat messages stemming from the CLI to the server.
       self.send(remote_actor, shared::chat_atom::value, std::move(message));
     },
-    [self_ = self](const shared::message<shared::chat_atom, std::string>& msg) {
-      const auto& [atom, message] = msg.tuple();
+    [self_ = self](shared::chat_atom, const shared::message<std::string>& msg) {
+      const auto& [message] = msg.tuple();
       auto span = shared::create_span(msg.span_ctx(), "chat recv (client)");
       span->SetTag("message", message);
 

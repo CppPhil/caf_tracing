@@ -4,10 +4,11 @@
 #include "message.hpp"
 
 namespace shared::traced {
-template <class... Ts>
+template <class Atom, class... Ts>
 struct replies_to {
   template <class... Ts2>
   using with =
-    typename caf::replies_to<message<Ts...>>::template with<message<Ts2...>>;
+    typename caf::replies_to<Atom,
+                             message<Ts...>>::template with<message<Ts2...>>;
 };
 } // namespace shared::traced

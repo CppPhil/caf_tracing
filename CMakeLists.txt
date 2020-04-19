@@ -39,7 +39,7 @@ find_package(CAF COMPONENTS core io test)
 string(
   APPEND
   CMAKE_CXX_FLAGS
-  " -Wall -Wextra -Wcast-align -Wcast-qual -Wmissing-field-initializers -Wmissing-include-dirs -Wpointer-arith -Wstack-protector -Wstrict-aliasing=2 -Wunreachable-code -Wlogical-op -Wduplicated-cond -Wnull-dereference -Wno-unused-parameter"
+  " -Wall -Wcast-align -Wcast-qual -Wmissing-field-initializers -Wmissing-include-dirs -Wpointer-arith -Wstack-protector -Wstrict-aliasing=2 -Wunreachable-code -Wlogical-op -Wduplicated-cond -Wnull-dereference -Wno-unused-parameter"
 )
 string(APPEND CMAKE_CXX_FLAGS_DEBUG " -g -O0")
 string(APPEND CMAKE_CXX_FLAGS_RELEASE

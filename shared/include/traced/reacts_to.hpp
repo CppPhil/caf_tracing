@@ -4,6 +4,6 @@
 #include "message.hpp"
 
 namespace shared::traced {
-template <class... Ts>
-using reacts_to = caf::reacts_to<message<Ts...>>;
+template <class Atom, class... Ts>
+using reacts_to = caf::reacts_to<Atom, message<Ts...>>;
 } // namespace shared::traced

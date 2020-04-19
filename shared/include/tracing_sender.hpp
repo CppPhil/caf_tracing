@@ -86,94 +86,106 @@ public:
   }
 
   // TODO: Consider making these so that they're called using operator->
-  template <caf::message_priority P = caf::message_priority::normal,
+  template <caf::message_priority P = caf::message_priority::normal, class Atom,
             class... Ts>
-  void send(const caf::group& dest, Ts&&... xs) {
-    self_->send(dest, make_message(std::forward<Ts>(xs)...));
+  void send(const caf::group& dest, Atom&& atom, Ts&&... xs) {
+    self_->send(dest, std::forward<Atom>(atom),
+                make_message(std::forward<Ts>(xs)...));
   }
 
   template <caf::message_priority P = caf::message_priority::normal, class Dest,
-            class... Ts>
-  void send(const Dest& dest, Ts&&... xs) {
-    self_->send(dest, make_message(std::forward<Ts>(xs)...));
+            class Atom, class... Ts>
+  void send(const Dest& dest, Atom&& atom, Ts&&... xs) {
+    self_->send(dest, std::forward<Atom>(atom),
+                make_message(std::forward<Ts>(xs)...));
   }
 
   template <caf::message_priority P = caf::message_priority::normal,
-            class Dest = caf::actor, class... Ts>
-  void anon_send(const Dest& dest, Ts&&... xs) {
-    self_->anon_send(dest, make_message(std::forward<Ts>(xs)...));
+            class Dest = caf::actor, class Atom, class... Ts>
+  void anon_send(const Dest& dest, Atom&& atom, Ts&&... xs) {
+    self_->anon_send(dest, std::forward<Atom>(atom),
+                     make_message(std::forward<Ts>(xs)...));
   }
 
   template <caf::message_priority P = caf::message_priority::normal,
-            class Dest = caf::actor, class... Ts>
+            class Dest = caf::actor, class Atom, class... Ts>
   void scheduled_send(const Dest& dest, caf::actor_clock::time_point timeout,
-                      Ts&&... xs) {
-    self_->scheduled_send(dest, std::move(timeout),
+                      Atom&& atom, Ts&&... xs) {
+    self_->scheduled_send(dest, std::move(timeout), std::forward<Atom>(atom),
                           make_message(std::forward<Ts>(xs)...));
   }
 
-  template <class... Ts>
+  template <class Atom, class... Ts>
   void scheduled_send(const caf::group& dest,
-                      caf::actor_clock::time_point timeout, Ts&&... xs) {
-    self_->scheduled_send(dest, std::move(timeout),
+                      caf::actor_clock::time_point timeout, Atom&& atom,
+                      Ts&&... xs) {
+    self_->scheduled_send(dest, std::move(timeout), std::forward<Atom>(atom),
                           make_message(std::forward<Ts>(xs)...));
   }
 
   template <caf::message_priority P = caf::message_priority::normal,
             class Rep = int, class Period = std::ratio<1>,
-            class Dest = caf::actor, class... Ts>
+            class Dest = caf::actor, class Atom, class... Ts>
   void delayed_send(const Dest& dest,
-                    std::chrono::duration<Rep, Period> rel_timeout,
+                    std::chrono::duration<Rep, Period> rel_timeout, Atom&& atom,
                     Ts&&... xs) {
-    self_->delayed_send(dest, std::move(rel_timeout),
+    self_->delayed_send(dest, std::move(rel_timeout), std::forward<Atom>(atom),
                         make_message(std::forward<Ts>(xs)...));
   }
 
   template <class Rep = int, class Period = std::ratio<1>,
-            class Dest = caf::actor, class... Ts>
+            class Dest = caf::actor, class Atom, class... Ts>
   void delayed_send(const caf::group& dest,
-                    std::chrono::duration<Rep, Period> rtime, Ts&&... xs) {
-    self_->delayed_send(dest, std::move(rtime),
+                    std::chrono::duration<Rep, Period> rtime, Atom&& atom,
+                    Ts&&... xs) {
+    self_->delayed_send(dest, std::move(rtime), std::forward<Atom>(atom),
                         make_message(std::forward<Ts>(xs)...));
   }
 
   template <caf::message_priority P = caf::message_priority::normal,
-            class Dest = caf::actor, class... Ts>
+            class Dest = caf::actor, class Atom, class... Ts>
   void scheduled_anon_send(const Dest& dest,
-                           caf::actor_clock::time_point timeout, Ts&&... xs) {
+                           caf::actor_clock::time_point timeout, Atom&& atom,
+                           Ts&&... xs) {
     self_->scheduled_anon_send(dest, std::move(timeout),
+                               std::forward<Atom>(atom),
                                make_message(std::forward<Ts>(xs)...));
   }
 
   template <caf::message_priority P = caf::message_priority::normal,
             class Dest = caf::actor, class Rep = int,
-            class Period = std::ratio<1>, class... Ts>
+            class Period = std::ratio<1>, class Atom, class... Ts>
   void delayed_anon_send(const Dest& dest,
                          std::chrono::duration<Rep, Period> rel_timeout,
-                         Ts&&... xs) {
+                         Atom&& atom, Ts&&... xs) {
     self_->delayed_anon_send(dest, std::move(rel_timeout),
+                             std::forward<Atom>(atom),
                              make_message(std::forward<Ts>(xs)...));
   }
 
-  template <class Rep = int, class Period = std::ratio<1>, class... Ts>
+  template <class Rep = int, class Period = std::ratio<1>, class Atom,
+            class... Ts>
   void delayed_anon_send(const caf::group& dest,
-                         std::chrono::duration<Rep, Period> rtime, Ts&&... xs) {
-    self_->delayed_anon_send(dest, std::move(rtime),
+                         std::chrono::duration<Rep, Period> rtime, Atom&& atom,
+                         Ts&&... xs) {
+    self_->delayed_anon_send(dest, std::move(rtime), std::forward<Atom>(atom),
                              make_message(std::forward<Ts>(xs)...));
   }
 
   template <caf::message_priority P = caf::message_priority::normal,
-            class Handle = caf::actor, class... Ts>
-  auto request(const Handle& dest, const caf::duration& timeout, Ts&&... xs) {
-    return self_->request(dest, timeout, make_message(std::forward<Ts>(xs)...));
+            class Handle = caf::actor, class Atom, class... Ts>
+  auto request(const Handle& dest, const caf::duration& timeout, Atom&& atom,
+               Ts&&... xs) {
+    return self_->request(dest, timeout, std::forward<Atom>(atom),
+                          make_message(std::forward<Ts>(xs)...));
   }
 
   template <caf::message_priority P = caf::message_priority::normal,
             class Rep = int, class Period = std::ratio<1>,
-            class Handle = caf::actor, class... Ts>
+            class Handle = caf::actor, class Atom, class... Ts>
   auto request(const Handle& dest, std::chrono::duration<Rep, Period> timeout,
-               Ts&&... xs) {
-    return self_->request(dest, std::move(timeout),
+               Atom&& atom, Ts&&... xs) {
+    return self_->request(dest, std::move(timeout), std::forward<Atom>(atom),
                           make_message(std::forward<Ts>(xs)...));
   }
 

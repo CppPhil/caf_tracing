@@ -125,7 +125,7 @@ void on_client_connect(self_pointer self, const std::string& nickname,
       return participant.actor() != client_actor;
     },
     shared::chat_atom::value,
-    fmt::format("{} has joined the chatroom.\n", nickname), inject_result);
+    fmt::format("{} has joined the chatroom.\n", nickname));
 }
 
 /// Handles chat messages originating from clients.
@@ -154,8 +154,7 @@ void on_chat(self_pointer self, const std::string& message,
         return participant.actor() != sender;
       },
       shared::chat_atom::value,
-      fmt::format("{}: \"{}\"\n", it->nickname(), message),
-      shared::span_context::inject(span).value_or((shared::span_context())));
+      fmt::format("{}: \"{}\"\n", it->nickname(), message));
   }
 }
 
@@ -184,22 +183,23 @@ on_ls(self_pointer self, const shared::span_context& span_ctx) {
 
 shared::server_actor_type::behavior_type chat_server(self_pointer self) {
   return {
-    [self](const shared::message<caf::join_atom, std::string,
-                                 shared::client_actor_type>& message) {
-      const auto& [atom, nickname, client_actor] = message.tuple();
+    [self](
+      caf::join_atom,
+      const shared::message<std::string, shared::client_actor_type>& message) {
+      const auto& [nickname, client_actor] = message.tuple();
       on_client_connect(self, nickname, client_actor, message.span_ctx());
     },
-    [self](const shared::message<shared::chat_atom, std::string>& msg) {
-      const auto& [atom, message] = msg.tuple();
+    [self](shared::chat_atom, const shared::message<std::string>& msg) {
+      const auto& [message] = msg.tuple();
       on_chat(self, message, msg.span_ctx());
     },
-    [self](const shared::message<caf::leave_atom, std::string>& message) {
-      const auto& [atom, goodbye_message] = message.tuple();
+    [self](caf::leave_atom, const shared::message<std::string>& message) {
+      const auto& [goodbye_message] = message.tuple();
 
       on_client_disconnect(self, self->current_sender()->address(),
                            goodbye_message, message.span_ctx());
     },
-    [self](const shared::message<shared::ls_atom>& message) {
+    [self](shared::ls_atom, const shared::message<>& message) {
       return on_ls(self, message.span_ctx());
     },
   };
