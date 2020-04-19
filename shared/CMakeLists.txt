@@ -40,7 +40,8 @@ target_include_directories(
          ${caf_tracing_SOURCE_DIR}/shared/include
          ${caf_tracing_SOURCE_DIR}/external/expected/include
          ${caf_tracing_SOURCE_DIR}/external/fmtlib/include
-         ${caf_tracing_SOURCE_DIR}/external/gsl/include)
+         ${caf_tracing_SOURCE_DIR}/external/gsl/include
+         ${caf_tracing_SOURCE_DIR}/external/philslib/include)
 
 target_compile_definitions(${LIB_NAME} PUBLIC CAF_ENABLE_ACTOR_PROFILER
                                               FMT_HEADER_ONLY)
