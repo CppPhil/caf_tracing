@@ -149,7 +149,7 @@ void on_chat(self_pointer self, const std::string& message,
 /// @param span_ctx The span context.
 /// @return A vector of the nicknames of the chat participants and the span
 ///         context.
-std::tuple<std::vector<std::string>, shared::span_context>
+shared::message<std::vector<std::string>>
 on_ls(self_pointer self, const shared::span_context& span_ctx) {
   auto span = shared::create_span(span_ctx, "ls (server)");
   auto& participants = self->state.participants;
@@ -161,9 +161,9 @@ on_ls(self_pointer self, const shared::span_context& span_ctx) {
   std::transform(participants.begin(), participants.end(), nicknames.begin(),
                  std::mem_fn(&participant::nickname));
 
-  return std::make_tuple(
-    std::move(nicknames),
-    shared::span_context::inject(span).value_or((shared::span_context())));
+  return shared::message(
+    shared::span_context::inject(span).value_or((shared::span_context())),
+    std::move(nicknames));
 }
 } // namespace
 
@@ -179,13 +179,12 @@ shared::server_actor_type::behavior_type chat_server(self_pointer self) {
       on_chat(self, message, msg.span_ctx());
     },
     [self](const shared::message<caf::leave_atom, std::string>& message) {
-      const auto& [atom, goobbye_message] = message.tuple();
+      const auto& [atom, goodbye_message] = message.tuple();
 
       on_client_disconnect(self, self->current_sender()->address(),
                            goodbye_message, message.span_ctx());
     },
-    [self](shared::ls_atom, const shared::span_context& span_ctx,
-           const shared::message<shared::ls_atom>& message) {
+    [self](const shared::message<shared::ls_atom>& message) {
       return on_ls(self, message.span_ctx());
     },
   };

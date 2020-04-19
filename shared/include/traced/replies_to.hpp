@@ -8,6 +8,6 @@ template <class... Ts>
 struct replies_to {
   template <class... Ts2>
   using with =
-    typename caf::replies_to<message<Ts...>::template with<message<Ts2...>>>;
+    typename caf::replies_to<message<Ts...>>::template with<message<Ts2...>>;
 };
 } // namespace shared::traced
