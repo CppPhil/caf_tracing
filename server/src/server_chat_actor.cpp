@@ -169,22 +169,24 @@ on_ls(self_pointer self, const shared::span_context& span_ctx) {
 
 shared::server_actor_type::behavior_type chat_server(self_pointer self) {
   return {
-    [self](caf::join_atom, const std::string& nickname,
-           const shared::client_actor_type& client_actor,
-           const shared::span_context& span_ctx) {
-      on_client_connect(self, nickname, client_actor, span_ctx);
+    [self](const shared::message<caf::join_atom, std::string,
+                                 shared::client_actor_type>& message) {
+      const auto& [atom, nickname, client_actor] = message.tuple();
+      on_client_connect(self, nickname, client_actor, message.span_context());
     },
-    [self](shared::chat_atom, const std::string& message,
-           const shared::span_context& span_ctx) {
-      on_chat(self, message, span_ctx);
+    [self](const shared::message<shared::chat_atom, std::string>& msg) {
+      const auto& [atom, message] = msg.tuple();
+      on_chat(self, message, msg.span_context());
     },
-    [self](caf::leave_atom, const std::string& goodbye_message,
-           const shared::span_context& span_ctx) {
+    [self](const shared::message<caf::leave_atom, std::string>& message) {
+      const auto& [atom, goobbye_message] = message.tuple();
+
       on_client_disconnect(self, self->current_sender()->address(),
-                           goodbye_message, span_ctx);
+                           goodbye_message, message.span_context());
     },
-    [self](shared::ls_atom, const shared::span_context& span_ctx) {
-      return on_ls(self, span_ctx);
+    [self](shared::ls_atom, const shared::span_context& span_ctx,
+           const shared::message<shared::ls_atom>& message) {
+      return on_ls(self, message.span_context());
     },
   };
 }

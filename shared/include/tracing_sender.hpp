@@ -1,7 +1,7 @@
 #pragma once
 #include <utility>
 
-#include "span_context.hpp"
+#include "message.hpp"
 
 namespace shared {
 template <class T>
@@ -78,15 +78,15 @@ public:
   template <class... Ts>
   decltype(auto) send(Ts&&... xs) {
     return self_->send(
-      std::forward<Ts>(xs)...,
-      span_context::inject(span_).value_or((shared::span_context())));
+      message(span_context::inject(span_).value_or((shared::span_context())),
+              std::forward<Ts>(xs)...));
   }
 
   template <class... Ts>
   decltype(auto) request(Ts&&... xs) {
     return self_->request(
-      std::forward<Ts>(xs)...,
-      span_context::inject(span_).value_or((shared::span_context())));
+      message(span_context::inject(span_).value_or((shared::span_context())),
+              std::forward<Ts>(xs)...));
   }
 
 private:

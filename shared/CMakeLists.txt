@@ -10,6 +10,7 @@ set(LIB_HEADERS
     include/create_span.hpp
     include/error.hpp
     include/ip_address.hpp
+    include/message.hpp
     include/server_actor_type.hpp
     include/setup_tracer.hpp
     include/source_location.hpp
