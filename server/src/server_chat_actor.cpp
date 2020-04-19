@@ -32,7 +32,10 @@ opentracing::Value make_value(const T& x) {
   using Stripped = pl::meta::remove_cvref_t<T>;
 
   if constexpr (caf::is_atom_constant<Stripped>::value) {
-    return "caf::atom_constant<" + caf::to_string(x) + ">";
+    std::string s("caf::atom_constant<caf::atom(");
+    s += caf::to_string(x);
+    s += ")>";
+    return s;
   } else {
     return x;
   }
