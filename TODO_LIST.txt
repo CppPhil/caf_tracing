@@ -1,4 +1,6 @@
 TODO: 
+  + // TODO: HERE: Make it so that the atoms are moved out of
+                   the message type.
   + Implement it so that it uses a custom message<span_context, Args...> type to send / receive the messages everywhere.
 
 See: // TODO: Consider making these so that they're called using operator-> 
