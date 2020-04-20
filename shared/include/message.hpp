@@ -16,6 +16,7 @@ public:
 
   explicit message(span_context span_ctx, Ts... xs)
     : span_context_(std::move(span_ctx)), tuple_(std::move(xs)...) {
+    // nop
   }
 
   span_context& span_ctx() noexcept {

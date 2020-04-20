@@ -17,6 +17,7 @@ public:
   class proxy {
   public:
     proxy(T& self, opentracing::Span* span) : self_(self), span_(span) {
+      // nop
     }
 
     template <caf::message_priority P = caf::message_priority::normal,
@@ -142,6 +143,7 @@ public:
                                                       operation_name.end()))
               : opentracing::Tracer::Global()->StartSpan(operation_name)),
       proxy_(self_, span_.get()) {
+    // nop
   }
 
   void Finish(std::initializer_list<

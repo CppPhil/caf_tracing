@@ -40,5 +40,4 @@ bool operator!=(const caf::actor_addr& lhs, const participant& rhs) noexcept;
 bool operator==(const participant& lhs, const participant& rhs) noexcept;
 
 bool operator!=(const participant& lhs, const participant& rhs) noexcept;
-
 } // namespace server
