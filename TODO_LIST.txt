@@ -1,4 +1,1 @@
-Make it so that the jaeger tracing data stuff
-is sent over HTTP
- -> // Merge that back to the wrapper branch.
 
