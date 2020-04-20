@@ -10,31 +10,21 @@ args::args(int argc, char** argv, const std::function<bool(int)>& keep) {
   for (auto i = 0; i < argc; ++i) {
     if (keep(i)) {
       const auto len = strlen(argv[i]);
-      auto* p = new (std::nothrow) char[len + 1];
-
-      if (p == nullptr) {
-        for (auto* ptr : data_)
-          delete[] ptr;
-
-        throw std::bad_alloc();
-      }
-
-      memcpy(p, argv[i], len + 1);
-      data_.push_back(p);
+      auto p = std::make_unique<char[]>(len + 1);
+      memcpy(p.get(), argv[i], len + 1);
+      data_.push_back(std::move(p));
     }
   }
-}
 
-args::~args() {
-  for (auto* p : data_)
-    delete[] p;
+  for (auto& up : data_)
+    argv_.push_back(up.get());
 }
 
 int args::argc() const noexcept {
-  return static_cast<int>(data_.size());
+  return static_cast<int>(argv_.size());
 }
 
 char** args::argv() noexcept {
-  return data_.data();
+  return argv_.data();
 }
 } // namespace shared
