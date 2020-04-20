@@ -36,9 +36,8 @@ opentracing::Value make_value(const T& x) {
     s += caf::to_string(x);
     s += ")>";
     return s;
-  } else {
+  } else
     return x;
-  }
 }
 
 template <class TracingSender, size_t... Ints, class... Ts>
