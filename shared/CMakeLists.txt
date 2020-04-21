@@ -9,6 +9,7 @@ set(LIB_HEADERS
     include/client_actor_type.hpp
     include/create_span.hpp
     include/error.hpp
+    include/hostname.hpp
     include/ip_address.hpp
     include/server_actor_type.hpp
     include/setup_tracer.hpp
@@ -23,6 +24,7 @@ set(LIB_SOURCES
     src/args.cpp
     src/create_span.cpp
     src/error.cpp
+    src/hostname.cpp
     src/ip_address.cpp
     src/setup_tracer.cpp
     src/span_context.cpp)
@@ -42,4 +44,4 @@ target_include_directories(
          ${caf_tracing_SOURCE_DIR}/external/gsl/include)
 
 target_compile_definitions(${LIB_NAME} PUBLIC CAF_ENABLE_ACTOR_PROFILER
-                                              FMT_HEADER_ONLY)
+                                              FMT_HEADER_ONLY __USE_POSIX)

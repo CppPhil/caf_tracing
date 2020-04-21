@@ -5,7 +5,6 @@
 
 #include <fmt/format.h>
 
-#include "inject.hpp"
 #include "span_context.hpp"
 
 namespace shared {

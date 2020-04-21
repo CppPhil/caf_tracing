@@ -37,5 +37,7 @@ void setup_tracer(const std::string& config_filepath,
 
   opentracing::Tracer::InitGlobal(
     std::static_pointer_cast<opentracing::Tracer>(tracer));
+
+  printf("JAEGER INFO: tracer setup for \"%s\"\n", service.c_str());
 }
 } // namespace shared
