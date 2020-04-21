@@ -4,6 +4,8 @@
 
 #include <tl/expected.hpp>
 
+#include <fmt/ostream.h>
+
 #include "source_location.hpp"
 
 namespace shared {
