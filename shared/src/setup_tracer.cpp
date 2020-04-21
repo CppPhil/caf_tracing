@@ -30,14 +30,22 @@ public:
 
 void setup_tracer(const std::string& config_filepath,
                   const std::string& service) {
-  auto config_yaml = YAML::LoadFile(config_filepath);
-  auto config = jaegertracing::Config::parse(config_yaml);
-  auto tracer = jaegertracing::Tracer::make(service, config,
-                                            std::make_unique<Logger>());
+  try {
+    auto config_yaml = YAML::LoadFile(config_filepath);
+    auto config = jaegertracing::Config::parse(config_yaml);
+    auto tracer = jaegertracing::Tracer::make(service, config,
+                                              std::make_unique<Logger>());
 
-  opentracing::Tracer::InitGlobal(
-    std::static_pointer_cast<opentracing::Tracer>(tracer));
+    opentracing::Tracer::InitGlobal(
+      std::static_pointer_cast<opentracing::Tracer>(tracer));
 
-  printf("JAEGER INFO: tracer setup for \"%s\"\n", service.c_str());
+    printf("JAEGER INFO: tracer setup for \"%s\"\n", service.c_str());
+  } catch (const std::runtime_error& ex) {
+    if (strstr(ex.what(), "Cannot connect socket to remote address") != nullptr)
+      fprintf(stderr, "Exception caught: \"%s\"\nIs Jaeger running?\n",
+              ex.what());
+
+    throw;
+  }
 }
 } // namespace shared
