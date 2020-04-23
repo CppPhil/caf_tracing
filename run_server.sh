@@ -51,7 +51,7 @@ done
 
 cd $DIR
 
-./build/server/server_application $DIR/config.yml --port=$port &
+./build/server/server_application --port=$port &
 
 cd $PREV_DIR
 
