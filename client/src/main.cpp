@@ -29,8 +29,6 @@ struct config : shared::actor_system_config {
   uint16_t port = 0;
 
   config() {
-    add_message_type<shared::client_actor_type>("client_actor_type");
-
     opt_group(custom_options_, "global")
       .add(host, "host,H", "server host")
       .add(port, "port,p", "port");

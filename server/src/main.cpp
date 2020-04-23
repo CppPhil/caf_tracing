@@ -17,8 +17,6 @@ struct config : shared::actor_system_config {
   uint16_t port = 0;
 
   config() : ip_address(shared::ip_address().value_or("localhost")) {
-    add_message_type<shared::client_actor_type>("client_actor_type");
-
     opt_group(custom_options_, "global").add(port, "port,p", "port");
   }
 
