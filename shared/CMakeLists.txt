@@ -2,17 +2,15 @@
 set(LIB_NAME shared_library)
 
 set(LIB_HEADERS
+    include/actor_profiler.hpp
     include/actor_system_config.hpp
     include/aprint.hpp
     include/args.hpp
-    include/atoms.hpp
-    include/client_actor_type.hpp
     include/create_span.hpp
     include/error.hpp
     include/hostname.hpp
     include/ip_address.hpp
     include/message.hpp
-    include/profiler.hpp
     include/server_actor_type.hpp
     include/setup_tracer.hpp
     include/source_location.hpp
@@ -21,16 +19,17 @@ set(LIB_HEADERS
     include/traced/replies_to.hpp
     include/tracing_data.hpp
     include/tracing_data_factory.hpp
-    include/tracing_sender.hpp)
+    include/tracing_sender.hpp
+    include/types.hpp)
 
 set(LIB_SOURCES
+    src/actor_profiler.cpp
     src/actor_system_config.cpp
     src/args.cpp
     src/create_span.cpp
     src/error.cpp
     src/hostname.cpp
     src/ip_address.cpp
-    src/profiler.cpp
     src/setup_tracer.cpp
     src/span_context.cpp
     src/tracing_data.cpp

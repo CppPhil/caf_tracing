@@ -13,7 +13,7 @@ caf::error tracing_data_factory::deserialize(
 }
 
 caf::error_code<caf::sec> tracing_data_factory::deserialize(
-  caf::binary_serializer& source,
+  caf::binary_deserializer& source,
   std::unique_ptr<caf::tracing_data>& dst) const {
   return deserialize_impl(source, dst);
 }

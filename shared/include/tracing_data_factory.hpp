@@ -18,7 +18,7 @@ public:
               std::unique_ptr<caf::tracing_data>& dst) const override;
 
   caf::error_code<caf::sec>
-  deserialize(caf::binary_serializer& source,
+  deserialize(caf::binary_deserializer& source,
               std::unique_ptr<caf::tracing_data>& dst) const override;
 
 private:

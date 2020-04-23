@@ -2,9 +2,10 @@
 #include <string>
 
 #include <caf/logger.hpp>
-#include <caf/test/unit_test.hpp>
 
-#define SHARED_SOURCE_LINE CAF_XSTR(__LINE__)
+#include <pl/stringify.hpp>
+
+#define SHARED_SOURCE_LINE PL_STRINGIFY(__LINE__)
 
 #define SHARED_SOURCE_LOCATION                                                 \
   "file: " + std::string(__FILE__)                                             \

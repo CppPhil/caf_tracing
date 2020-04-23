@@ -8,9 +8,9 @@ void set_span_context(const span_context& span_ctx);
 
 void set_span_context(span_context&& span_ctx);
 
-class profiler : public caf::actor_profiler {
+class actor_profiler : public caf::actor_profiler {
 public:
-  profiler();
+  actor_profiler();
 
   void add_actor(const caf::local_actor& actor,
                  const caf::local_actor* parent) override;
