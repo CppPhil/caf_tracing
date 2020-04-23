@@ -8,6 +8,7 @@
 #include <pl/meta/detection_idiom.hpp>
 #include <pl/meta/remove_cvref.hpp>
 
+#include "actor_profiler.hpp"
 #include "aprint.hpp"
 #include "create_span.hpp"
 #include "get_tracing_data.hpp"
@@ -41,35 +42,35 @@ opentracing::Value make_value(const T& x) {
     return x;
 }
 
-template <class TracingSender, size_t... Ints, class... Ts>
-void log_args_impl(TracingSender& tracing_sender, std::index_sequence<Ints...>,
-                   const Ts&... xs) {
-  tracing_sender.Log({std::make_pair(opentracing::string_view(arg<Ints>::str),
-                                     make_value(xs))...});
+template <class Span, size_t... Ints, class... Ts>
+void log_args_impl(Span& span, std::index_sequence<Ints...>, const Ts&... xs) {
+  span.Log({std::make_pair(opentracing::string_view(arg<Ints>::str),
+                           make_value(xs))...});
 }
 
-template <class TracingSender, class... Ts>
-void log_args(TracingSender& tracing_sender, const Ts&... xs) {
-  log_args_impl(tracing_sender, (std::index_sequence_for<Ts...>()), xs...);
+template <class Span, class... Ts>
+void log_args(Span& span, const Ts&... xs) {
+  log_args_impl(span, (std::index_sequence_for<Ts...>()), xs...);
 }
 
 /// Sends something to all participants matching the given filter.
 /// @tparam Filter The type of `filter`.
 /// @tparam Ts A template type parameter pack of the arguments to send.
-/// @param operation_name The operation name to use for the tracing Span.
+/// @param tracer The tracer to use.
+/// @param span The tracing span to use.
 /// @param self The server chat actor.
 /// @param filter The filter to apply. The signature of the operator() must be
 ///               bool operator(const participant&)
 /// @param xs The arguments to send to all participants satisfying the filter
 ///           predicate.
 template <class Filter, class... Ts>
-void send(opentracing::string_view operation_name, self_pointer self,
-          const Filter& filter, const Ts&... xs) {
+void send(const opentracing::Tracer* tracer, opentracing::Span& span,
+          self_pointer self, const Filter& filter, const Ts&... xs) {
   auto& participants = self->state.participants;
+  log_args(span, xs...);
 
-  //  shared::tracing_sender self{self_, operation_name, parent_span};
-
-  //  log_args(self, xs...);
+  shared::set_span_context(shared::span_context::inject(tracer, span)
+                             .value_or(shared::span_context{}));
 
   for (const auto& participant : participants)
     if (filter(participant))
@@ -90,8 +91,10 @@ void on_client_disconnect(
   self_pointer self,
   const caf::actor_addr& actor_address_of_disconnected_client,
   const std::string& goodbye_message) noexcept {
-  // auto span = shared::create_span(span_ctx, "quit (server)");
-  // span->SetTag("goodbye_message", goodbye_message);
+  auto span = shared::create_span(shared::tracer::get(self->id()),
+                                  shared::get_tracing_data(self),
+                                  "on client disconnect");
+  span->SetTag("goodbye_message", goodbye_message);
 
   auto& participants = self->state.participants;
 
@@ -108,10 +111,8 @@ void on_client_disconnect(
     // Send all clients an appropriate chat message containing the goodbye
     // message if there's one.
     send(
-      "server: send chat message (disconnect)",
-      // tl::make_optional(
-      //    shared::span_context::inject(span).value_or((shared::span_context()))),
-      self, [](const participant&) { return true; }, shared::chat_atom_v,
+      shared::tracer::get(self->id()), *span, self,
+      [](const participant&) { return true; }, shared::chat_atom_v,
       [&goodbye_message, &nickname] {
         if (goodbye_message.empty())
           return fmt::format("{} has left the chatroom.\n", nickname);
@@ -153,7 +154,8 @@ void on_client_connect(self_pointer self, const std::string& nickname,
 
   // Inform all other participants about the new client.
   send(
-    "server: send chat message (connect)" /*, tl::make_optional(inject_result)*/
+    shared::tracer::get(self->id()),
+    *span /*, tl::make_optional(inject_result)*/
     ,
     self,
     [&client_actor](const participant& participant) {
@@ -180,7 +182,7 @@ void on_chat(self_pointer self, const std::string& message) {
   if (it != participants.end()) { // If it was found
     // Send the chat message to all other chat participants.
     send(
-      "server: send chat message (chat)",
+      shared::tracer::get(self->id()), *span,
       // tl::make_optional(
       //  shared::span_context::inject(span).value_or((shared::span_context()))),
       self,
@@ -209,6 +211,10 @@ std::vector<std::string> on_ls(self_pointer self) {
                  std::mem_fn(&participant::nickname));
 
   span->SetTag("nicknames", caf::join(nicknames, ", "));
+
+  shared::set_span_context(
+    shared::span_context::inject(shared::tracer::get(self->id()), *span)
+      .value_or(shared::span_context{}));
 
   // return shared::message(
   //  shared::span_context::inject(span).value_or((shared::span_context())),
