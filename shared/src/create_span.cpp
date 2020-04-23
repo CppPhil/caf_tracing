@@ -16,7 +16,7 @@ create_span(const opentracing::Tracer* tracer, const caf::tracing_data* data,
     return tracer->StartSpan(operation_name);
   }
 
-  const auto ctx = p->value.extract(tracer);
+  const auto ctx = span_context(p->value).extract(tracer);
 
   if (!ctx.has_value() || *ctx == nullptr) {
     fmt::print(stderr, "Span \"{}\" has no parent!\n", operation_name);
