@@ -3,7 +3,7 @@
 
 #include "caf/fwd.hpp"
 
-#include "client_actor_type.hpp"
+#include "types.hpp"
 
 namespace client {
 /// Routine to perform an orderly shutdown of the client application.

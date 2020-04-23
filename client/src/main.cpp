@@ -17,11 +17,11 @@
 
 #include "actor_system_config.hpp"
 #include "args.hpp"
-#include "atoms.hpp"
 #include "client_actor.hpp"
 #include "hostname.hpp"
 #include "setup_tracer.hpp"
 #include "shutdown.hpp"
+#include "types.hpp"
 
 namespace {
 struct config : shared::actor_system_config {

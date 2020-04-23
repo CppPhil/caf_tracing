@@ -20,6 +20,7 @@ CAF_BEGIN_TYPE_ID_BLOCK(caf_tracing, caf::first_custom_type_id)
   CAF_ADD_TYPE_ID(caf_tracing, (shared::message<>) )
 CAF_END_TYPE_ID_BLOCK(caf_tracing)
 
+namespace shared {
 using client_actor_type
   = caf::typed_actor<caf::reacts_to<caf::join_atom, std::string>,
                      caf::reacts_to<ls_atom>,
@@ -27,6 +28,7 @@ using client_actor_type
                      caf::reacts_to<local_chat_atom, std::string>,
                      traced::reacts_to<chat_atom, std::string>,
                      caf::replies_to<ls_query_atom, std::string>::with<bool>>;
+} // namespace shared
 
 CAF_BEGIN_TYPE_ID_BLOCK(caf_tracing_ctd, caf::id_block::caf_tracing::end)
   CAF_ADD_TYPE_ID(caf_tracing,

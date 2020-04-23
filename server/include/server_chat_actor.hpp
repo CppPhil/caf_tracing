@@ -3,9 +3,9 @@
 
 #include "caf/all.hpp"
 
-#include "atoms.hpp"
 #include "participant.hpp"
 #include "server_actor_type.hpp"
+#include "types.hpp"
 
 namespace server {
 /// The type of the state object of the chat server actor.

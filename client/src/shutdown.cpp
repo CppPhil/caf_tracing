@@ -1,6 +1,6 @@
 #include "shutdown.hpp"
 #include "aprint.hpp"
-#include "atoms.hpp"
+#include "types.hpp"
 
 namespace client {
 void shutdown(caf::actor_system& system, caf::scoped_actor& self,

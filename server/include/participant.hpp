@@ -3,7 +3,7 @@
 
 #include "caf/all.hpp"
 
-#include "client_actor_type.hpp"
+#include "types.hpp"
 
 namespace server {
 /// Type to represent a chat participant (client).

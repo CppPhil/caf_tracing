@@ -4,9 +4,9 @@
 
 #include <caf/all.hpp>
 
-#include "client_actor_type.hpp"
 #include "traced/reacts_to.hpp"
 #include "traced/replies_to.hpp"
+#include "types.hpp"
 
 namespace shared {
 using server_actor_type = caf::typed_actor<

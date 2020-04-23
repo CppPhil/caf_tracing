@@ -2,10 +2,10 @@
 #include <tuple>
 
 #include "aprint.hpp"
-#include "atoms.hpp"
 #include "client_actor.hpp"
 #include "create_span.hpp"
 #include "tracing_sender.hpp"
+#include "types.hpp"
 
 namespace client {
 shared::client_actor_type::behavior_type
