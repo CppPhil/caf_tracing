@@ -67,7 +67,7 @@ template <class Filter, class... Ts>
 void send(const opentracing::Tracer* tracer, opentracing::Span& span,
           self_pointer self, const Filter& filter, const Ts&... xs) {
   auto& participants = self->state.participants;
-  log_args(span, xs...);
+  // log_args(span, xs...);
 
   shared::set_span_context(shared::span_context::inject(tracer, span)
                              .value_or(shared::span_context{}));
