@@ -4,7 +4,7 @@
 namespace shared {
 template <class T>
 caf::tracing_data* get_tracing_data(T& actor) {
-  auto* mailbox_element = actor.current_mailbox_element();
+  auto* mailbox_element = actor->current_mailbox_element();
 
   if (mailbox_element == nullptr)
     return nullptr;

@@ -3,13 +3,20 @@
 #include <fmt/format.h>
 
 #include "create_span.hpp"
+#include "tracing_data.hpp"
 
 namespace shared {
 std::unique_ptr<opentracing::Span>
-create_span(const opentracing::Tracer* tracer,
-            const span_context& serialized_span_context,
+create_span(const opentracing::Tracer* tracer, const caf::tracing_data* data,
             const std::string& operation_name) {
-  const auto ctx = serialized_span_context.extract(tracer);
+  const auto* p = dynamic_cast<const tracing_data*>(data);
+
+  if (p == nullptr) {
+    fmt::print(stderr, "Span \"{}\" has no parent!\n", operation_name);
+    return tracer->StartSpan(operation_name);
+  }
+
+  const auto ctx = p->value.extract(tracer);
 
   if (!ctx.has_value() || *ctx == nullptr) {
     fmt::print(stderr, "Span \"{}\" has no parent!\n", operation_name);

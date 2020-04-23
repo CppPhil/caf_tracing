@@ -10,8 +10,10 @@
 
 #include "aprint.hpp"
 #include "create_span.hpp"
+#include "get_tracing_data.hpp"
 #include "server_chat_actor.hpp"
 #include "span_context.hpp"
+#include "tracer/get.hpp"
 #include "tracer/put.hpp"
 
 namespace server {
@@ -126,8 +128,10 @@ void on_client_disconnect(
 /// @param client_actor The client actor.
 void on_client_connect(self_pointer self, const std::string& nickname,
                        const shared::client_actor_type& client_actor) {
-  // auto span = shared::create_span(span_ctx, "join (server)");
-  // span->SetTag("nickname", nickname);
+  auto span = shared::create_span(shared::tracer::get(self->id()),
+                                  shared::get_tracing_data(self),
+                                  "on client connect");
+  span->SetTag("nickname", nickname);
   auto& participants = self->state.participants;
 
   // const auto inject_result
@@ -163,8 +167,9 @@ void on_client_connect(self_pointer self, const std::string& nickname,
 /// @param self This server chat actor.
 /// @param message The message received from a client.
 void on_chat(self_pointer self, const std::string& message) {
-  // auto span = shared::create_span(span_ctx, "chat (server)");
-  // span->SetTag("message", message);
+  auto span = shared::create_span(shared::tracer::get(self->id()),
+                                  shared::get_tracing_data(self), "on chat");
+  span->SetTag("message", message);
   auto& sender = self->current_sender();
   auto& participants = self->state.participants;
 
@@ -192,7 +197,8 @@ void on_chat(self_pointer self, const std::string& message) {
 /// @return A vector of the nicknames of the chat participants and the span
 ///         context.
 std::vector<std::string> on_ls(self_pointer self) {
-  // auto span = shared::create_span(span_ctx, "ls (server)");
+  auto span = shared::create_span(shared::tracer::get(self->id()),
+                                  shared::get_tracing_data(self), "on ls");
   auto& participants = self->state.participants;
 
   // Allocate enough storage for the nicknames.
@@ -202,7 +208,7 @@ std::vector<std::string> on_ls(self_pointer self) {
   std::transform(participants.begin(), participants.end(), nicknames.begin(),
                  std::mem_fn(&participant::nickname));
 
-  // span->SetTag("nicknames", caf::join(nicknames, ", "));
+  span->SetTag("nicknames", caf::join(nicknames, ", "));
 
   // return shared::message(
   //  shared::span_context::inject(span).value_or((shared::span_context())),
