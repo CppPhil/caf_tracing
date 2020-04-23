@@ -5,13 +5,14 @@
 
 #include <caf/io/all.hpp>
 
+#include "actor_system_config.hpp"
 #include "args.hpp"
 #include "ip_address.hpp"
 #include "server_chat_actor.hpp"
 #include "setup_tracer.hpp"
 
 namespace {
-struct config : caf::actor_system_config {
+struct config : shared::actor_system_config {
   std::string ip_address;
   uint16_t port = 0;
 

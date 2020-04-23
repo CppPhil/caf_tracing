@@ -6,6 +6,7 @@
 namespace shared {
 error::error(std::string error_message)
   : error_message_(std::move(error_message)) {
+  // nop
 }
 
 const std::string& error::message() const {

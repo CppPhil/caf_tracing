@@ -39,7 +39,7 @@ find_package(CAF COMPONENTS core io test)
 string(
   APPEND
   CMAKE_CXX_FLAGS
-  " -Werror -Wall -Wextra -Wcast-align -Wcast-qual -Wmissing-field-initializers -Wmissing-include-dirs -Wpointer-arith -Wstack-protector -Wstrict-aliasing=2 -Wunreachable-code -Wlogical-op -Wduplicated-cond -Wnull-dereference -Wno-unused-parameter"
+  " -Wall -Wcast-align -Wcast-qual -Wmissing-field-initializers -Wmissing-include-dirs -Wpointer-arith -Wstack-protector -Wstrict-aliasing=2 -Wunreachable-code -Wlogical-op -Wduplicated-cond -Wnull-dereference -Wno-unused-parameter"
 )
 string(APPEND CMAKE_CXX_FLAGS_DEBUG " -g -O0")
 string(APPEND CMAKE_CXX_FLAGS_RELEASE
@@ -51,8 +51,12 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 find_package(Threads REQUIRED)
 
-set(BUILD_TESTING false)
-set(JAEGERTRACING_BUILD_EXAMPLES false)
+set(BUILD_TESTING
+    OFF
+    CACHE BOOL "Build jaeger tests" FORCE)
+set(JAEGERTRACING_BUILD_EXAMPLES
+    OFF
+    CACHE BOOL "Build examples" FORCE)
 add_subdirectory(external/jaeger-client-cpp)
 
 add_subdirectory(client)
