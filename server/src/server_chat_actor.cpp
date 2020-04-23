@@ -12,6 +12,7 @@
 #include "create_span.hpp"
 #include "server_chat_actor.hpp"
 #include "span_context.hpp"
+#include "tracer/put.hpp"
 
 namespace server {
 namespace {
@@ -211,6 +212,8 @@ std::vector<std::string> on_ls(self_pointer self) {
 } // namespace
 
 shared::server_actor_type::behavior_type chat_server(self_pointer self) {
+  shared::tracer::put(self->id(), "server");
+
   return {
     [self](caf::join_atom, const std::string& nickname,
            const shared::client_actor_type& client_actor) {

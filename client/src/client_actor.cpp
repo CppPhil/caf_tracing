@@ -3,12 +3,16 @@
 #include "aprint.hpp"
 #include "client_actor.hpp"
 #include "create_span.hpp"
+#include "tracer/get.hpp"
+#include "tracer/put.hpp"
 #include "types.hpp"
 
 namespace client {
 shared::client_actor_type::behavior_type
 client_actor(shared::client_actor_type::pointer self,
              const shared::server_actor_type& remote_actor) {
+  shared::tracer::put(self->id(), "client");
+
   return {
     [self, remote_actor](caf::join_atom atom, std::string nickname) {
       //      shared::tracing_sender self{self_, "join (client)"};

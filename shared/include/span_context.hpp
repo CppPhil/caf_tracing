@@ -15,23 +15,25 @@ namespace shared {
 class span_context {
 public:
   static tl::expected<span_context, error>
-  inject(const opentracing::SpanContext& span_ctx);
+  inject(const opentracing::Tracer* tracer,
+         const opentracing::SpanContext& span_ctx);
 
   static tl::expected<span_context, error>
-  inject(const opentracing::Span& span);
+  inject(const opentracing::Tracer* tracer, const opentracing::Span& span);
 
   static tl::expected<span_context, error>
-  inject(const opentracing::Span* span_ptr);
+  inject(const opentracing::Tracer* tracer, const opentracing::Span* span_ptr);
 
   static tl::expected<span_context, error>
-  inject(const std::unique_ptr<opentracing::Span>& span_unique_ptr);
+  inject(const opentracing::Tracer* tracer,
+         const std::unique_ptr<opentracing::Span>& span_unique_ptr);
 
   span_context();
 
   explicit span_context(std::string serialized_span_context);
 
   tl::expected<std::unique_ptr<opentracing::SpanContext>, error>
-  extract() const;
+  extract(const opentracing::Tracer* tracer) const;
 
   friend std::ostream& operator<<(std::ostream& os,
                                   const span_context& span_ctx);

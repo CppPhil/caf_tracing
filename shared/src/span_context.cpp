@@ -10,10 +10,11 @@
 namespace shared {
 namespace {
 tl::expected<std::string, error>
-inject_impl(const opentracing::SpanContext& sc) {
+inject_impl(const opentracing::Tracer* tracer,
+            const opentracing::SpanContext& sc) {
   std::ostringstream oss;
 
-  const auto exp = opentracing::Tracer::Global()->Inject(sc, oss);
+  const auto exp = tracer->Inject(sc, oss);
 
   if (!exp.has_value()) {
     oss.clear();
@@ -28,15 +29,16 @@ inject_impl(const opentracing::SpanContext& sc) {
 }
 
 opentracing::expected<std::unique_ptr<opentracing::SpanContext>>
-extract_impl(const std::string& string) {
+extract_impl(const opentracing::Tracer* tracer, const std::string& string) {
   std::istringstream iss(string);
-  return opentracing::Tracer::Global()->Extract(iss);
+  return tracer->Extract(iss);
 }
 } // namespace
 
 tl::expected<span_context, error>
-span_context::inject(const opentracing::SpanContext& span_ctx) {
-  auto expected_serialized_span_context = inject_impl(span_ctx);
+span_context::inject(const opentracing::Tracer* tracer,
+                     const opentracing::SpanContext& span_ctx) {
+  auto expected_serialized_span_context = inject_impl(tracer, span_ctx);
 
   if (!expected_serialized_span_context.has_value()) {
     fmt::print(stderr, "INJECT FAILURE: \"{}\"\n",
@@ -48,12 +50,14 @@ span_context::inject(const opentracing::SpanContext& span_ctx) {
 }
 
 tl::expected<span_context, error>
-span_context::inject(const opentracing::Span& span) {
-  return inject(span.context());
+span_context::inject(const opentracing::Tracer* tracer,
+                     const opentracing::Span& span) {
+  return inject(tracer, span.context());
 }
 
 tl::expected<span_context, error>
-span_context::inject(const opentracing::Span* span_ptr) {
+span_context::inject(const opentracing::Tracer* tracer,
+                     const opentracing::Span* span_ptr) {
   if (span_ptr == nullptr) {
     const tl::expected<span_context, error> error_result(
       SHARED_UNEXPECTED("span_ptr was equal to nullptr!"));
@@ -61,12 +65,13 @@ span_context::inject(const opentracing::Span* span_ptr) {
     return error_result;
   }
 
-  return inject(*span_ptr);
+  return inject(tracer, *span_ptr);
 }
 
 tl::expected<span_context, error> span_context::inject(
+  const opentracing::Tracer* tracer,
   const std::unique_ptr<opentracing::Span>& span_unique_ptr) {
-  return inject(span_unique_ptr.get());
+  return inject(tracer, span_unique_ptr.get());
 }
 
 span_context::span_context() : span_context("") {
@@ -79,8 +84,8 @@ span_context::span_context(std::string serialized_span_context)
 }
 
 tl::expected<std::unique_ptr<opentracing::SpanContext>, error>
-span_context::extract() const {
-  auto exp = extract_impl(buffer_);
+span_context::extract(const opentracing::Tracer* tracer) const {
+  auto exp = extract_impl(tracer, buffer_);
 
   if (!exp.has_value()) {
     std::ostringstream oss;

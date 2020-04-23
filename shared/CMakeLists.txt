@@ -10,6 +10,7 @@ set(LIB_HEADERS
     include/create_span.hpp
     include/create_tracer.hpp
     include/error.hpp
+    include/get_tracing_data.hpp
     include/hostname.hpp
     include/ip_address.hpp
     include/message.hpp
