@@ -12,12 +12,15 @@ set(LIB_HEADERS
     include/hostname.hpp
     include/ip_address.hpp
     include/message.hpp
+    include/profiler.hpp
     include/server_actor_type.hpp
     include/setup_tracer.hpp
     include/source_location.hpp
     include/span_context.hpp
     include/traced/reacts_to.hpp
     include/traced/replies_to.hpp
+    include/tracing_data.hpp
+    include/tracing_data_factory.hpp
     include/tracing_sender.hpp)
 
 set(LIB_SOURCES
@@ -27,14 +30,16 @@ set(LIB_SOURCES
     src/error.cpp
     src/hostname.cpp
     src/ip_address.cpp
+    src/profiler.cpp
     src/setup_tracer.cpp
-    src/span_context.cpp)
+    src/span_context.cpp
+    src/tracing_data.cpp
+    src/tracing_data_factory.cpp)
 
 add_library(${LIB_NAME} OBJECT ${LIB_HEADERS} ${LIB_SOURCES})
 
-target_link_libraries(
-  ${LIB_NAME} PUBLIC Threads::Threads ${CMAKE_DL_LIBS} ${CAF_LIBRARY_CORE}
-                     ${CAF_LIBRARY_IO} jaegertracing)
+target_link_libraries(${LIB_NAME} PUBLIC Threads::Threads jaegertracing
+                                         ${CMAKE_DL_LIBS} CAF::core CAF::io)
 
 target_include_directories(
   ${LIB_NAME}
