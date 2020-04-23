@@ -9,17 +9,8 @@
 
 #include <caf/io/all.hpp>
 
-#include <pl/os.hpp>
-
-#if PL_OS == PL_OS_LINUX
-#  include <unistd.h>
-#endif
-
 #include "actor_system_config.hpp"
-#include "args.hpp"
 #include "client_actor.hpp"
-#include "hostname.hpp"
-#include "setup_tracer.hpp"
 #include "shutdown.hpp"
 #include "types.hpp"
 
@@ -87,15 +78,6 @@ void run_client(caf::actor_system& system, const config& config) noexcept {
       invalid_command(line_buffer);
   }
 }
-
-int64_t pid() noexcept {
-#if PL_OS == PL_OS_LINUX
-  return getpid();
-#else
-#  warning "client/src/main.cpp:pid: Unsupported operating system."
-  return 0;
-#endif
-}
 } // namespace
 
 void caf_main(caf::actor_system& system, const config& config) {
@@ -112,17 +94,4 @@ void caf_main(caf::actor_system& system, const config& config) {
   run_client(system, config);
 }
 
-int main(int argc, char** argv) {
-  if (argc < 2) {
-    fprintf(stderr,
-            "No YAML config file was passed as a command line argument!\n");
-    return EXIT_FAILURE;
-  }
-
-  shared::setup_tracer(argv[1], fmt::format("caf_tracing-client-{}-{}",
-                                            shared::hostname(), pid()));
-
-  static shared::args args(argc, argv, [](int i) { return i != 1; });
-
-  return caf::exec_main<caf::io::middleman>(caf_main, args.argc(), args.argv());
-}
+CAF_MAIN(caf::io::middleman)

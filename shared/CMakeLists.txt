@@ -2,17 +2,18 @@
 set(LIB_NAME shared_library)
 
 set(LIB_HEADERS
+    include/tracer/get.hpp
+    include/tracer/put.hpp
     include/actor_profiler.hpp
     include/actor_system_config.hpp
     include/aprint.hpp
-    include/args.hpp
     include/create_span.hpp
+    include/create_tracer.hpp
     include/error.hpp
     include/hostname.hpp
     include/ip_address.hpp
     include/message.hpp
     include/server_actor_type.hpp
-    include/setup_tracer.hpp
     include/source_location.hpp
     include/span_context.hpp
     include/tracing_data.hpp
@@ -20,14 +21,15 @@ set(LIB_HEADERS
     include/types.hpp)
 
 set(LIB_SOURCES
+    src/tracer/get.cpp
+    src/tracer/put.cpp
     src/actor_profiler.cpp
     src/actor_system_config.cpp
-    src/args.cpp
     src/create_span.cpp
+    src/create_tracer.cpp
     src/error.cpp
     src/hostname.cpp
     src/ip_address.cpp
-    src/setup_tracer.cpp
     src/span_context.cpp
     src/tracing_data.cpp
     src/tracing_data_factory.cpp)
