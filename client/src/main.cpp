@@ -62,7 +62,7 @@ void run_client(caf::actor_system& system, const config& config) noexcept {
   std::getline(std::cin, username);
 
   // Connect to the remote server.
-  self->send(client_actor, caf::join_atom::value, username);
+  self->send(client_actor, caf::join_atom_v, username);
 
   const auto invalid_command = [](const std::string& line) {
     fmt::print(stderr, "Invalid command: \"{}\"\n", line);
@@ -76,15 +76,15 @@ void run_client(caf::actor_system& system, const config& config) noexcept {
     if (parts.empty())
       invalid_command(line_buffer); // NOLINT(bugprone-branch-clone)
     else if (parts.front() == "/ls")
-      self->send(client_actor, shared::ls_atom::value);
+      self->send(client_actor, shared::ls_atom_v);
     else if (parts.front() == "/quit") {
-      self->send(client_actor, caf::leave_atom::value,
+      self->send(client_actor, caf::leave_atom_v,
                  caf::join(++(parts.begin()), parts.end(), " "));
       client::shutdown(system, self, client_actor, username);
       return;
     } else if (!parts.front().empty()
                && parts.front().front() != '/') // Handle chat command
-      self->send(client_actor, shared::local_chat_atom::value, line_buffer);
+      self->send(client_actor, shared::local_chat_atom_v, line_buffer);
     else
       invalid_command(line_buffer);
   }

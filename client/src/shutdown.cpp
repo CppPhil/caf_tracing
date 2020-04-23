@@ -10,7 +10,7 @@ void shutdown(caf::actor_system& system, caf::scoped_actor& self,
   // -> Then exit.
   for (auto keep_spinning = true; keep_spinning;) {
     self
-      ->request(client_actor, caf::infinite, shared::ls_query_atom::value,
+      ->request(client_actor, caf::infinite, shared::ls_query_atom_v,
                 client_nickname)
       .receive(
         [&self, &client_actor,

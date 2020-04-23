@@ -6,6 +6,7 @@
 
 #include <tl/optional.hpp>
 
+#include <pl/meta/detection_idiom.hpp>
 #include <pl/meta/remove_cvref.hpp>
 
 #include "aprint.hpp"
@@ -28,15 +29,14 @@ struct arg {
 };
 
 template <class T>
-opentracing::Value make_value(const T& x) {
-  using Stripped = pl::meta::remove_cvref_t<T>;
+using caf_to_stringable
+  = decltype(caf::to_string(std::declval<pl::meta::remove_cvref_t<T>>()));
 
-  if constexpr (caf::is_atom_constant<Stripped>::value) {
-    std::string s("caf::atom_constant<caf::atom(");
-    s += caf::to_string(x);
-    s += ")>";
-    return s;
-  } else
+template <class T>
+opentracing::Value make_value(const T& x) {
+  if constexpr (pl::meta::is_detected<caf_to_stringable, T>::value)
+    return caf::to_string(x);
+  else
     return x;
 }
 
@@ -114,7 +114,7 @@ void on_client_disconnect(
       "server: send chat message (disconnect)",
       tl::make_optional(
         shared::span_context::inject(span).value_or((shared::span_context()))),
-      self, [](const participant&) { return true; }, shared::chat_atom::value,
+      self, [](const participant&) { return true; }, shared::chat_atom_v,
       [&goodbye_message, &nickname] {
         if (goodbye_message.empty())
           return fmt::format("{} has left the chatroom.\n", nickname);
@@ -161,7 +161,7 @@ void on_client_connect(self_pointer self, const std::string& nickname,
     [&client_actor](const participant& participant) {
       return participant.actor() != client_actor;
     },
-    shared::chat_atom::value,
+    shared::chat_atom_v,
     fmt::format("{} has joined the chatroom.\n", nickname));
 }
 
@@ -190,7 +190,7 @@ void on_chat(self_pointer self, const std::string& message,
       [&sender](const participant& participant) {
         return participant.actor() != sender;
       },
-      shared::chat_atom::value,
+      shared::chat_atom_v,
       fmt::format("{}: \"{}\"\n", it->nickname(), message));
   }
 }

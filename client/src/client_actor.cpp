@@ -53,7 +53,7 @@ client_actor(shared::client_actor_type::pointer self,
       self.SetTag("message", message);
 
       // Send any chat messages stemming from the CLI to the server.
-      self->send(remote_actor, shared::chat_atom::value, std::move(message));
+      self->send(remote_actor, shared::chat_atom_v, std::move(message));
     },
     [self_ = self](shared::chat_atom, const shared::message<std::string>& msg) {
       const auto& [message] = msg.tuple();
@@ -75,7 +75,7 @@ client_actor(shared::client_actor_type::pointer self,
       // server side when performing an orderly shutdown.
       auto response_promise = self.underlying()->make_response_promise<bool>();
 
-      self->request(remote_actor, caf::infinite, shared::ls_atom::value)
+      self->request(remote_actor, caf::infinite, shared::ls_atom_v)
         .then(
           [client_nickname, response_promise](
             const shared::message<std::vector<std::string>>& message) mutable {

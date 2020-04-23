@@ -108,8 +108,10 @@ public:
     }
 
     template <caf::message_priority P = caf::message_priority::normal,
+              class Rep = int, class Period = std::ratio<1>,
               class Handle = caf::actor, class Atom, class... Ts>
-    auto request(const Handle& dest, const caf::duration& timeout, Atom&& atom,
+    auto request(const Handle& dest,
+                 const std::chrono::duration<Rep, Period>& timeout, Atom&& atom,
                  Ts&&... xs) {
       return self_->request(dest, timeout, std::forward<Atom>(atom),
                             make_message(std::forward<Ts>(xs)...));
