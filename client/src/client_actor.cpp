@@ -5,6 +5,7 @@
 #include "client_actor.hpp"
 #include "create_span.hpp"
 #include "get_tracing_data.hpp"
+#include "span_context.hpp"
 #include "tracer/get.hpp"
 #include "tracer/put.hpp"
 #include "types.hpp"
@@ -24,7 +25,8 @@ client_actor(shared::client_actor_type::pointer self,
 
       shared::set_span_context(
         shared::span_context::inject(shared::tracer::get(self->id()), span)
-          .value_or(shared::span_context{}));
+          .value_or(shared::span_context{})
+          .str());
 
       // Delegate join message to the server.
       self->send(remote_actor, atom, std::move(nickname), self);
@@ -35,7 +37,8 @@ client_actor(shared::client_actor_type::pointer self,
 
       shared::set_span_context(
         shared::span_context::inject(shared::tracer::get(self->id()), span)
-          .value_or(shared::span_context{}));
+          .value_or(shared::span_context{})
+          .str());
 
       // Pass the /ls request to the server and properly print the result.
       self->request(remote_actor, caf::infinite, atom)
@@ -60,7 +63,8 @@ client_actor(shared::client_actor_type::pointer self,
 
       shared::set_span_context(
         shared::span_context::inject(shared::tracer::get(self->id()), span)
-          .value_or(shared::span_context{}));
+          .value_or(shared::span_context{})
+          .str());
 
       // Delegate the quit message to the server.
       self->send(remote_actor, atom, std::move(goodbye_message));
@@ -74,7 +78,8 @@ client_actor(shared::client_actor_type::pointer self,
 
       shared::set_span_context(
         shared::span_context::inject(shared::tracer::get(self->id()), span)
-          .value_or(shared::span_context{}));
+          .value_or(shared::span_context{})
+          .str());
 
       // Send any chat messages stemming from the CLI to the server.
       self->send(remote_actor, shared::chat_atom_v, std::move(message));
@@ -105,7 +110,8 @@ client_actor(shared::client_actor_type::pointer self,
       auto response_promise = self->make_response_promise<bool>();
 
       shared::set_span_context(shared::span_context::inject(tracer, span)
-                                 .value_or(shared::span_context{}));
+                                 .value_or(shared::span_context{})
+                                 .str());
 
       self->request(remote_actor, caf::infinite, shared::ls_atom_v)
         .then([tracer, trcing_data, client_nickname, response_promise](

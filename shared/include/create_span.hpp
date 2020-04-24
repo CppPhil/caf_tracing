@@ -1,5 +1,11 @@
 #pragma once
-#include "span_context.hpp"
+#include <memory>
+#include <string>
+
+#include <caf/all.hpp>
+
+#include <opentracing/span.h>
+#include <opentracing/tracer.h>
 
 namespace shared {
 std::unique_ptr<opentracing::Span>

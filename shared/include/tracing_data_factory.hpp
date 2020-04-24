@@ -26,7 +26,7 @@ private:
   typename Deserializer::result_type
   deserialize_impl(Deserializer& source,
                    std::unique_ptr<caf::tracing_data>& dst) const {
-    span_context value;
+    std::string value;
     if (auto err = source(value))
       return err;
     dst = std::make_unique<tracing_data>(std::move(value));

@@ -13,7 +13,6 @@ set(LIB_HEADERS
     include/get_tracing_data.hpp
     include/hostname.hpp
     include/ip_address.hpp
-    include/message.hpp
     include/server_actor_type.hpp
     include/source_location.hpp
     include/span_context.hpp

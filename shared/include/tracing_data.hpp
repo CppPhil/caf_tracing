@@ -1,14 +1,12 @@
 #pragma once
 #include <caf/all.hpp>
 
-#include "span_context.hpp"
-
 namespace shared {
 class tracing_data : public caf::tracing_data {
 public:
-  span_context value;
+  std::string value;
 
-  explicit tracing_data(span_context span_ctx);
+  tracing_data(std::string span_ctx);
 
   caf::error serialize(caf::serializer& sink) const override;
 

@@ -3,6 +3,7 @@
 #include <fmt/format.h>
 
 #include "create_span.hpp"
+#include "span_context.hpp"
 #include "tracing_data.hpp"
 
 namespace shared {

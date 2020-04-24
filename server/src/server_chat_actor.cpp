@@ -70,7 +70,8 @@ void send(const opentracing::Tracer* tracer, opentracing::Span& span,
   log_args(span, xs...);
 
   shared::set_span_context(shared::span_context::inject(tracer, span)
-                             .value_or(shared::span_context{}));
+                             .value_or(shared::span_context{})
+                             .str());
 
   for (const auto& participant : participants)
     if (filter(participant))
@@ -214,7 +215,8 @@ std::vector<std::string> on_ls(self_pointer self) {
 
   shared::set_span_context(
     shared::span_context::inject(shared::tracer::get(self->id()), *span)
-      .value_or(shared::span_context{}));
+      .value_or(shared::span_context{})
+      .str());
 
   // return shared::message(
   //  shared::span_context::inject(span).value_or((shared::span_context())),

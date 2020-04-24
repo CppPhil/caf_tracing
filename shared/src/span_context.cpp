@@ -98,6 +98,10 @@ span_context::extract(const opentracing::Tracer* tracer) const {
   return *std::move(exp);
 }
 
+const std::string& span_context::str() const noexcept {
+  return buffer_;
+}
+
 std::ostream& operator<<(std::ostream& os, const span_context& span_ctx) {
   return os << fmt::format("span_context{\"buffer_\": \"{}\"}",
                            span_ctx.buffer_);

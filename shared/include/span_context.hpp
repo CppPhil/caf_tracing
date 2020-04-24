@@ -35,24 +35,10 @@ public:
   tl::expected<std::unique_ptr<opentracing::SpanContext>, error>
   extract(const opentracing::Tracer* tracer) const;
 
+  const std::string& str() const noexcept;
+
   friend std::ostream& operator<<(std::ostream& os,
                                   const span_context& span_ctx);
-
-  template <class Inspector>
-  friend std::enable_if_t<Inspector::reads_state,
-                          typename Inspector::result_type>
-  inspect(Inspector& f, const span_context& span_ctx) {
-    return f(caf::meta::type_name("span_context"), span_ctx.buffer_);
-  }
-
-  template <class Inspector>
-  friend std::enable_if_t<Inspector::writes_state,
-                          typename Inspector::result_type>
-  inspect(Inspector& f, span_context& span_ctx) {
-    std::string string;
-    auto g = gsl::finally([&] { span_ctx.buffer_ = string; });
-    return f(caf::meta::type_name("span_context"), string);
-  }
 
 private:
   std::string buffer_;

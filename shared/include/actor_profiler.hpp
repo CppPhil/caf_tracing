@@ -1,12 +1,10 @@
 #pragma once
 #include <caf/all.hpp>
 
-#include "span_context.hpp"
-
 namespace shared {
-void set_span_context(const span_context& span_ctx);
+void set_span_context(const std::string& span_ctx);
 
-void set_span_context(span_context&& span_ctx);
+void set_span_context(std::string&& span_ctx);
 
 class actor_profiler : public caf::actor_profiler {
 public:

@@ -14,14 +14,14 @@
 
 namespace shared {
 namespace {
-thread_local span_context current_span_context;
+thread_local std::string current_span_context;
 } // namespace
 
-void set_span_context(const span_context& span_ctx) {
+void set_span_context(const std::string& span_ctx) {
   current_span_context = span_ctx;
 }
 
-void set_span_context(span_context&& span_ctx) {
+void set_span_context(std::string&& span_ctx) {
   current_span_context = std::move(span_ctx);
 }
 
@@ -83,7 +83,7 @@ void actor_profiler::before_sending(const caf::local_actor& actor,
     return;
   }
 
-  element.tracing_id = std::make_unique<tracing_data>(*inject_res);
+  element.tracing_id = std::make_unique<tracing_data>(inject_res->str());
 }
 
 void actor_profiler::before_sending_scheduled(
@@ -111,6 +111,6 @@ void actor_profiler::before_sending_scheduled(
     return;
   }
 
-  element.tracing_id = std::make_unique<tracing_data>(*inject_res);
+  element.tracing_id = std::make_unique<tracing_data>(inject_res->str());
 }
 } // namespace shared
