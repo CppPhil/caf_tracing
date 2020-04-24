@@ -94,4 +94,5 @@ void caf_main(caf::actor_system& system, const config& config) {
   run_client(system, config);
 }
 
-CAF_MAIN(caf::io::middleman)
+CAF_MAIN(caf::id_block::caf_tracing, caf::id_block::caf_tracing_ctd,
+         caf::io::middleman)

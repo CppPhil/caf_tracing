@@ -3,6 +3,7 @@
 #include <vector>
 
 #include <caf/all.hpp>
+#include <caf/type_id.hpp>
 
 CAF_BEGIN_TYPE_ID_BLOCK(caf_tracing, caf::first_custom_type_id)
   CAF_ADD_ATOM(caf_tracing, shared, local_chat_atom)
@@ -24,5 +25,5 @@ using client_actor_type
 } // namespace shared
 
 CAF_BEGIN_TYPE_ID_BLOCK(caf_tracing_ctd, caf::id_block::caf_tracing::end)
-  CAF_ADD_TYPE_ID(caf_tracing, (shared::client_actor_type))
+  CAF_ADD_TYPE_ID(caf_tracing_ctd, (shared::client_actor_type))
 CAF_END_TYPE_ID_BLOCK(caf_tracing_ctd)

@@ -8,6 +8,7 @@
 #include "actor_system_config.hpp"
 #include "ip_address.hpp"
 #include "server_chat_actor.hpp"
+#include "types.hpp"
 
 namespace {
 struct config : shared::actor_system_config {
@@ -48,4 +49,5 @@ void caf_main(caf::actor_system& system, const config& config) {
   run_server(system, config);
 }
 
-CAF_MAIN(caf::io::middleman)
+CAF_MAIN(caf::id_block::caf_tracing, caf::id_block::caf_tracing_ctd,
+         caf::io::middleman)
