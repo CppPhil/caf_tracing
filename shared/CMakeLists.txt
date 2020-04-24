@@ -37,8 +37,9 @@ set(LIB_SOURCES
 
 add_library(${LIB_NAME} OBJECT ${LIB_HEADERS} ${LIB_SOURCES})
 
-target_link_libraries(${LIB_NAME} PUBLIC Threads::Threads jaegertracing
-                                         ${CMAKE_DL_LIBS} ${CAF_LIBRARIES})
+target_link_libraries(
+  ${LIB_NAME} PUBLIC Threads::Threads jaegertracing ${CMAKE_DL_LIBS}
+                     ${CAF_LIBRARY_CORE} ${CAF_LIBRARY_IO})
 
 target_include_directories(
   ${LIB_NAME}
