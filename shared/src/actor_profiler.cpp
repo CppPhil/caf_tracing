@@ -45,10 +45,14 @@ void actor_profiler::before_processing(const caf::local_actor& actor,
   if (tracer == nullptr)
     return;
 
-  auto span = create_span(tracer, element.tracing_id.get(),
-                          "before_processing");
-  /*span->SetTag("actor", actor.name());
-  span->SetTag("element", caf::to_string(element.content()));*/
+  const auto* trc_data = element.tracing_id.get();
+
+  if (trc_data == nullptr)
+    fmt::print(stderr, "before_processing: element.tracing_id was NULLPTR!\n");
+
+  auto span = create_span(tracer, trc_data, "before_processing");
+  span->SetTag("actor", actor.name());
+  span->SetTag("element", caf::to_string(element.content()));
 }
 
 void actor_profiler::after_processing(
@@ -68,10 +72,10 @@ void actor_profiler::before_sending(const caf::local_actor& actor,
     element.tracing_id = std::make_unique<tracing_data>(current_span_context);
 
   auto span = create_span(tracer, element.tracing_id.get(), "before_sending");
-  /*
-    span->SetTag("actor", actor.name());
-    span->SetTag("element", caf::to_string(element.content()));
-  */
+
+  span->SetTag("actor", actor.name());
+  span->SetTag("element", caf::to_string(element.content()));
+
   const auto inject_res = span_context::inject(tracer, span);
 
   if (!inject_res.has_value()) {
@@ -95,11 +99,11 @@ void actor_profiler::before_sending_scheduled(
 
   auto span = create_span(tracer, element.tracing_id.get(),
                           "before_sending_scheduled");
-  /*
-    span->SetTag("actor", actor.name());
-    span->SetTag("timeout", timeout.time_since_epoch().count());
-    span->SetTag("element", caf::to_string(element.content()));
-  */
+
+  span->SetTag("actor", actor.name());
+  span->SetTag("timeout", timeout.time_since_epoch().count());
+  span->SetTag("element", caf::to_string(element.content()));
+
   const auto inject_res = span_context::inject(tracer, span);
 
   if (!inject_res.has_value()) {

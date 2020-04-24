@@ -5,6 +5,8 @@
 #include <caf/all.hpp>
 #include <caf/type_id.hpp>
 
+#include "span_context.hpp"
+
 CAF_BEGIN_TYPE_ID_BLOCK(caf_tracing, caf::first_custom_type_id)
   CAF_ADD_ATOM(caf_tracing, shared, local_chat_atom)
   CAF_ADD_ATOM(caf_tracing, shared, ls_query_atom)
@@ -12,6 +14,7 @@ CAF_BEGIN_TYPE_ID_BLOCK(caf_tracing, caf::first_custom_type_id)
   CAF_ADD_ATOM(caf_tracing, shared, ls_atom)
 
   CAF_ADD_TYPE_ID(caf_tracing, (std::vector<std::string>) )
+  CAF_ADD_TYPE_ID(caf_tracing, (shared::span_context))
 CAF_END_TYPE_ID_BLOCK(caf_tracing)
 
 namespace shared {

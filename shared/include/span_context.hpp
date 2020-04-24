@@ -35,8 +35,6 @@ public:
   tl::expected<std::unique_ptr<opentracing::SpanContext>, error>
   extract(const opentracing::Tracer* tracer) const;
 
-  const std::string& buf() const noexcept;
-
   friend std::ostream& operator<<(std::ostream& os,
                                   const span_context& span_ctx);
 

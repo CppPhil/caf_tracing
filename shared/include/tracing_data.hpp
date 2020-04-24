@@ -6,9 +6,9 @@
 namespace shared {
 class tracing_data : public caf::tracing_data {
 public:
-  std::string value;
+  span_context value;
 
-  explicit tracing_data(const span_context& span_ctx);
+  explicit tracing_data(span_context span_ctx);
 
   caf::error serialize(caf::serializer& sink) const override;
 

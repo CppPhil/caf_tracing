@@ -1,8 +1,7 @@
 #include "tracing_data.hpp"
 
 namespace shared {
-tracing_data::tracing_data(const span_context& span_ctx)
-  : value(span_ctx.buf()) {
+tracing_data::tracing_data(span_context span_ctx) : value(std::move(span_ctx)) {
   // nop
 }
 
