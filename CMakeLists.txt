@@ -33,7 +33,8 @@ endif()
 
 execute_process(COMMAND bash ${caf_tracing_SOURCE_DIR}/scripts/build_caf.sh)
 
-set(CAF_ROOT_DIR ${caf_tracing_SOURCE_DIR}/build/caf)
+set(CAF_ROOT_DIR
+    ${caf_tracing_SOURCE_DIR}/external/actor-framework-0.17.4/build)
 find_package(CAF COMPONENTS core io test)
 
 string(
